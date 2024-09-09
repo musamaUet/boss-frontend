@@ -1,0 +1,31 @@
+// ** custom textfileds for small text
+.customTextField {
+  .MuiInputBase-input {
+    font-size: 0.875rem; // Adjust the value as needed
+  }
+}
+
+// ** custome group textfiled
+.customGroupTextField {
+  .css-160z382-MuiInputBase-root-MuiOutlinedInput-root {
+    padding-right: 3px !important;
+    .MuiSelect-select {
+      padding: 0px;
+    }
+  }
+}
+
+// ** input props textfield
+.custom_input_props_one {
+  cursor: pointer;
+  padding: 15px 5px;
+  position: relative;
+  background: #e4e4e4;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  .my-select {
+    div.css-134rwgm-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+      padding-right: 20px;
+    }
+  }
+}

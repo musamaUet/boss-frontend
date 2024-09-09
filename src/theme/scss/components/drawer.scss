@@ -1,0 +1,36 @@
+// styles.scss
+
+.Header {
+  display: flex;
+  align-items: center;
+  //   padding: #{$theme.spacing(3)};
+  justify-content: space-between;
+}
+
+.drawer_bottom_glow_box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f4f6f8;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -5px; /* Adjust this value to control the height of the glow */
+    left: 0;
+    width: 100%;
+    height: 5px; /* Adjust this value to control the thickness of the glow */
+    background-color: white;
+    box-shadow: 0 0 10px 5px white; /* Adjust the spread radius and blur radius for desired glow effect */
+  }
+}
+
+.my_input_label {
+  transform: none;
+  line-height: 1.154;
+  position: relative;
+  margin-bottom: 0.25rem;
+  font-size: 0.8125rem;
+  color: rgba(47, 43, 61, 0.78);
+}

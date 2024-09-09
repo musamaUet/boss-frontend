@@ -1,0 +1,85 @@
+$primary_lighter: #ffd599;
+$primary_light: #ffbb5c;
+$primary_main: #ff9500;
+$primary_dark: #e08300;
+$primary_darker: #8f5300;
+$primary_contrast: #ffffff;
+
+$secondary_lighter: #d6e4ff;
+$secondary_light: #84a9ff;
+$secondary_main: #3366ff;
+$secondary_dark: #1939b7;
+$secondary_darker: #091a7a;
+$secondary_contrast: #ffffff;
+
+$info_lighter: #cafdf5;
+$info_light: #61f3f3;
+$info_main: #00b8d9;
+$info_dark: #006c9c;
+$info_darker: #003768;
+$info_contrast: #ffffff;
+
+$success_lighter: #d8fbde;
+$success_light: #86e8ab;
+$success_main: #36b37e;
+$success_dark: #1b806a;
+$success_darker: #0a5554;
+$success_contrast: #ffffff;
+
+$warning_lighter: #fff5cc;
+$warning_light: #ffd666;
+$warning_main: #ffab00;
+$warning_dark: #b76e00;
+$warning_darker: #7a4100;
+$warning_contrast: #919eab;
+
+$error_lighter: #ffe9d5;
+$error_light: #ffac82;
+$error_main: #ff5630;
+$error_dark: #b71d18;
+$error_darker: #7a0916;
+$error_contrast: #ffffff;
+
+:export {
+  primaryLighter: $primary_lighter;
+  primaryLight: $primary_light;
+  primaryMain: $primary_main;
+  primaryDark: $primary_dark;
+  primaryDarker: $primary_darker;
+  primaryContrast: $primary_contrast;
+
+  secondaryLighter: $secondary_lighter;
+  secondaryLight: $secondary_light;
+  secondaryMain: $secondary_main;
+  secondaryDark: $secondary_dark;
+  secondaryDarker: $secondary_darker;
+  secondaryContrast: $secondary_contrast;
+
+  infoLighter: $info_lighter;
+  infoLight: $info_light;
+  infoMain: $info_main;
+  infoDark: $info_dark;
+  infoDarker: $info_darker;
+  infoContrast: $info_contrast;
+
+  successLighter: $success_lighter;
+  successLight: $success_light;
+  successMain: $success_main;
+  successDark: $success_dark;
+  successDarker: $success_darker;
+  successContrast: $success_contrast;
+
+  warningLighter: $warning_lighter;
+  warningLight: $warning_light;
+  warningMain: $warning_main;
+  warningDark: $warning_dark;
+  warningDarker: $warning_darker;
+  warningContrast: $warning_contrast;
+
+  errorLighter: $error_lighter;
+  errorLight: $error_light;
+  errorMain: $error_main;
+  errorDark: $error_dark;
+  errorDarker: $error_darker;
+  errorContrast: $error_contrast;
+}
