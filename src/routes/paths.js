@@ -23,7 +23,11 @@ export const paths = {
   dashboard: {
     root: ROOTS.DASHBOARD,
     one: `${ROOTS.DASHBOARD}/one`,
-    invoice: `${ROOTS.DASHBOARD}/invoice`,
+    invoice: {
+      root: `${ROOTS.DASHBOARD}/invoice/add`,
+      details: (id) => `${ROOTS.DASHBOARD}/invoice/${id}`,
+    },
+    // invoice: (id) => id ? `${ROOTS.DASHBOARD}/invoice/${id}` : `${ROOTS.DASHBOARD}/invoice`,
     // schedule: `${ROOTS.DASHBOARD}/schedule`,
     // schedule: `${ROOTS.DASHBOARD}/schedule`,
     payment: `${ROOTS.DASHBOARD}/payment`,

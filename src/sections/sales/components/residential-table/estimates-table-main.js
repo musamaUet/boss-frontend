@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTheme } from '@mui/material/styles';
 
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
@@ -25,6 +26,7 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TablePaginationCustom,
+  TableNoData,
 } from 'src/components/table';
 
 import {
@@ -61,7 +63,11 @@ const TABLE_HEAD = [
   { id: 'actions', label: 'Actions', align: 'center' },
 ];
 
-const EstimatesTable = ({ type }) => {
+const EstimatesTable = ({ type, data, loading }) => {
+
+  const theme = useTheme();
+
+  console.log(data)
 
   const TABLE_DATA = Array(10)
     .fill()
@@ -88,8 +94,10 @@ const EstimatesTable = ({ type }) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    setTableData(TABLE_DATA);
-  }, []);
+    if (data) {
+      setTableData(data);
+    }
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -104,64 +112,43 @@ const EstimatesTable = ({ type }) => {
         <Scrollbar>
           <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
             <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
+              // order={table.order}
+              // orderBy={table.orderBy}
               headLabel={TABLE_HEAD}
-              rowCount={tableData.length}
-              numSelected={table.selected.length}
+            // rowCount={tableData.length}
+            // numSelected={table.selected.length}
             />
 
             <TableBody>
-              {dataFiltered
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage
-                )
-                .map((row) => (
-                  <>
-                    {console.log(row)}
-                    <EstimatesTableRow
-                      key={row.id}
-                      row={row}
-                      onSelectRow={() => table.onSelectRow(row.id)}
-                      onViewRow={() => handleViewRow(row.id)}
-                      onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                    />
-                    {/* <TableRow hover key={row.name}>
-                    <TableCell> {row.name} </TableCell>
-                    <TableCell align="center">{row.calories}</TableCell>
-                    <TableCell align="center">{row.fat}</TableCell>
-                    <TableCell align="center">{row.carbs}</TableCell>
-                    <TableCell align="center">{row.protein}</TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      <Stack direction={'row'} justifyContent="end" spacing={1}>
-                        <Button
-                          variant="outlined"
-                          sx={{ width: 40, minWidth: 40, height: 40 }}
-                          onClick={(e) => {
-                            console.log(e);
-                          }}
-                        >
-                          {SvgEditSquare}
-                        </Button>
-                        <Button variant="outlined" sx={{ width: 40, minWidth: 40, height: 40 }}>
-                          {SvgCrossGray}
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow> */}
-                  </>
-                ))}
+              {
+                loading?.value ?
+                  [...Array(table.rowsPerPage)].map((i, index) => (
+                    <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                  ))
+                  :
+                  tableData?.map((row) => (
+                    <>
+                      <EstimatesTableRow
+                        key={row.id}
+                        row={row}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onViewRow={() => handleViewRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                      // setSelectedRow={setSelectedRow}
+                      // appointmentDialog={appointmentDialog}
+                      // getData={getData}
+                      />
+                    </>
+                  ))}
 
-              <TableEmptyRows
-                height={denseHeight}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+              <TableNoData
+                notFound={tableData?.length === 0}
+                sx={{
+                  m: -2,
+                  borderRadius: 1.5,
+                  border: `dashed 1px ${theme.palette.divider}`,
+                }}
               />
             </TableBody>
           </Table>
@@ -170,13 +157,13 @@ const EstimatesTable = ({ type }) => {
 
       <TablePaginationCustom
         count={dataFiltered.length}
-        page={table.page}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
+        page={table?.page}
+        rowsPerPage={table?.rowsPerPage}
+        onPageChange={table?.onChangePage}
+        onRowsPerPageChange={table?.onChangeRowsPerPage}
         //
-        dense={table.dense}
-        onChangeDense={table.onChangeDense}
+        dense={table?.dense}
+        onChangeDense={table?.onChangeDense}
       />
 
       <CustomPopover
@@ -187,7 +174,7 @@ const EstimatesTable = ({ type }) => {
       >
         <MenuItem
           onClick={() => {
-            router.push(paths.dashboard.invoice)
+            router.push(paths.dashboard.invoice.details(row?._id))
             popover.onClose();
           }}
         >

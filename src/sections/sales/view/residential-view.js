@@ -17,6 +17,7 @@ import EstimatesTable from '../components/residential-table/estimates-table-main
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useLocation } from 'react-router';
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -32,12 +33,12 @@ const TABS = [
     label: 'Drafts',
   },
   {
-    value: 'work_orders',
+    value: 'work-order',
     icon: <Iconify icon="eva:headphones-fill" width={24} />,
     label: 'Work Orders',
   },
   {
-    value: 'change_orders',
+    value: 'change-order',
     icon: <Iconify icon="eva:headphones-fill" width={24} />,
     label: 'Change Orders',
   },
@@ -47,7 +48,7 @@ const TABS = [
     label: 'Invoices',
   },
   {
-    value: 'sent_to_project',
+    value: 'to-project',
     icon: <Iconify icon="eva:headphones-fill" width={24} />,
     label: 'Estimates sent to projects',
   },
@@ -65,6 +66,7 @@ const ResidentialView = () => {
   const router = useRouter()
 
   const [currentTab, setCurrentTab] = useState('estimates');
+  const [tableData, setTableData] = useState([])
 
   const { state } = useLocation()
 
@@ -78,6 +80,18 @@ const ResidentialView = () => {
     setCurrentTab(newValue);
   }, []);
 
+  const getData = async () => {
+    try {
+      const { data } = await axios.get(API_ENDPOINTS.schedule.invoices.get + `?type=estimate`)
+      setTableData(data?.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Card>
@@ -105,11 +119,11 @@ const ResidentialView = () => {
                 px={2.5}
               >
                 <Typography variant="h4"> Estimates</Typography>
-                <Button onClick={() => router.push(paths.dashboard.invoice)} variant="contained" color="primary">
+                <Button onClick={() => router.push(paths.dashboard.invoice.root)} variant="contained" color="primary">
                   Create an Estimate
                 </Button>
               </Stack>
-              <EstimatesTable type='residential' />
+              <EstimatesTable type='residential' data={tableData?.data} />
             </>
           )}
         </Stack>

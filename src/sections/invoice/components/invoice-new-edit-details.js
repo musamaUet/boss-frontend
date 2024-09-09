@@ -26,8 +26,10 @@ import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceNewEditDetails() {
+export default function InvoiceNewEditDetails({ data }) {
   const { control, setValue, watch, resetField, reset } = useFormContext();
+
+  console.log(data)
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -36,23 +38,24 @@ export default function InvoiceNewEditDetails() {
 
   const values = watch();
 
-  const totalOnRow = values.items.map((item) => item.quantity * item.price);
+  const totalOnRow = values.items.map((item) => item.quantity * (item.rate + item.tax + item.markUp));
 
   const subTotal = sum(totalOnRow);
 
-  const totalAmount = subTotal - values.discount - values.shipping + values.taxes;
+  const totalAmount = subTotal - values.discount - values.markUp - values.discount;
 
   useEffect(() => {
-    setValue('totalAmount', totalAmount);
-  }, [setValue, totalAmount]);
+    setValue('subTotal', subTotal);
+  }, [setValue, subTotal, data]);
 
   const handleAdd = () => {
     append({
       title: '',
       description: '',
-      service: '',
       quantity: 1,
-      price: 0,
+      rate: 0,
+      tax: 0,
+      markUp: 0,
       total: 0,
     });
   };
@@ -64,24 +67,10 @@ export default function InvoiceNewEditDetails() {
   const handleClearService = useCallback(
     (index) => {
       resetField(`items[${index}].quantity`);
-      resetField(`items[${index}].price`);
+      resetField(`items[${index}].rate`);
       resetField(`items[${index}].total`);
     },
     [resetField]
-  );
-
-  const handleSelectService = useCallback(
-    (index, option) => {
-      setValue(
-        `items[${index}].price`,
-        INVOICE_SERVICE_OPTIONS.find((service) => service.name === option)?.price
-      );
-      setValue(
-        `items[${index}].total`,
-        values.items.map((item) => item.quantity * item.price)[index]
-      );
-    },
-    [setValue, values.items]
   );
 
   const handleChangeQuantity = useCallback(
@@ -89,7 +78,7 @@ export default function InvoiceNewEditDetails() {
       setValue(`items[${index}].quantity`, Number(event.target.value));
       setValue(
         `items[${index}].total`,
-        values.items.map((item) => item.quantity * item.price)[index]
+        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
       );
     },
     [setValue, values.items]
@@ -97,10 +86,32 @@ export default function InvoiceNewEditDetails() {
 
   const handleChangePrice = useCallback(
     (event, index) => {
-      setValue(`items[${index}].price`, Number(event.target.value));
+      setValue(`items[${index}].rate`, Number(event.target.value));
       setValue(
         `items[${index}].total`,
-        values.items.map((item) => item.quantity * item.price)[index]
+        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
+      );
+    },
+    [setValue, values.items]
+  );
+
+  const handleChangeMarkup = useCallback(
+    (event, index) => {
+      setValue(`items[${index}].markUp`, Number(event.target.value));
+      setValue(
+        `items[${index}].total`,
+        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
+      );
+    },
+    [setValue, values.items]
+  );
+
+  const handleChangeTax = useCallback(
+    (event, index) => {
+      setValue(`items[${index}].tax`, Number(event.target.value));
+      setValue(
+        `items[${index}].total`,
+        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
       );
     },
     [setValue, values.items]
@@ -129,44 +140,25 @@ export default function InvoiceNewEditDetails() {
     [files]
   );
 
-
-  useEffect(() => {
-    if (fields.length === 1 && !fields[0].title) {
-      reset({
-        items: [
-          { title: '4702 jet machine work', description: 'Water, drainage, concrete, and fixtures .', quantity: 1, rate: 100, total: 100 },
-          { title: 'Plumbing material and Labor', description: `4 in PVC DWV pipe, one section 2", fittings, and auxiliary materials. 3/4 CPVC overhead cold water with shut off valve and ending with a
-utility sink with faucet with hose connection. The water drop will be with a hard copper pipe. Floor Side 4 in pipe with indirect connection
-for machine drainage. Testing, permit, and city inspection .`, quantity: 2, rate: 150, total: 300 },
-          { title: 'Concrete cutting and pouring mixin ..', description: `Concrete cutting and hauling to the dumpster. Digging connection area to drain, trench, and machine area. Slab work Dimensions 135 FT
-long x 2.5 FT wide x 4 inches thick. Total 4.5 or Cubic Yards. 5/8 rebar setting every 3 FT on each side will be every 1.5 FT or 44 rebars per
-side or 86 total anchored with epoxy and isolated concrete from dirt with a plastic vapor barrier. Concrete pouring and finishing. area
-cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 },
-          { title: 'Rental equipment', description: `Walk behind cutting saw, backhoe 1 ton, scissor lift, Jack hammer, sweeper, accessories, and delivery`, quantity: 4, rate: 250, total: 1000 },
-        ]
-      });
-    }
-  }, [fields, reset]);
-
-
-
   const renderTotal = (
     <Grid container spacing={5} mt={3}>
       <Grid md={4}>
-        <Box sx={{border: '4px solid #67C118', borderRadius: 2}}>
-          <Box sx={{backgroundColor: '#67C118', padding: 2, borderRadius: 1}}>
+        <Box sx={{ border: '4px solid #67C118', borderRadius: 2 }}>
+          <Box sx={{ backgroundColor: '#67C118', padding: 2, borderRadius: 1 }}>
             <Typography color={'#ffffff'}>Notes</Typography>
           </Box>
-          <TextField multiline rows={6} placeholder='Document notes here' fullWidth sx={{border: 'none', '& .MuiOutlinedInput': {
-            border: 'none'
-          }}}/>
+          <TextField name='additionalNotes' multiline rows={6} placeholder='Document notes here' fullWidth sx={{
+            border: 'none', '& .MuiOutlinedInput': {
+              border: 'none'
+            }
+          }} />
         </Box>
       </Grid>
       <Grid md={4}>
         <Stack width={1} spacing={2}>
-          <Box sx={{bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1}}>
+          <Box sx={{ bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1 }}>
             <Stack direction={'row'} gap={1}>
-              <Image src='/assets/images/tiger.png' sx={{width: '69px', height: '69px'}}/>
+              <Image src='/assets/images/tiger.png' sx={{ width: '69px', height: '69px' }} />
               <Stack>
                 <Typography color={'#ffffff'}>Pic 1</Typography>
                 <Typography color={'#ffffff'}>Caption line 1 here</Typography>
@@ -174,9 +166,9 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
             </Stack>
           </Box>
 
-          <Box sx={{bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1}}>
+          <Box sx={{ bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1 }}>
             <Stack direction={'row'} gap={1}>
-              <Image src='/assets/images/tiger.png' sx={{width: '69px', height: '69px'}}/>
+              <Image src='/assets/images/tiger.png' sx={{ width: '69px', height: '69px' }} />
               <Stack>
                 <Typography color={'#ffffff'}>Pic 1</Typography>
                 <Typography color={'#ffffff'}>Caption line 1 here</Typography>
@@ -193,35 +185,27 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
         >
           <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Subtotal</Box>
-            <Box sx={{ width: 160, typography: 'subtitle2' }}>{fCurrency(subTotal) || '-'}</Box>
+            <Box sx={{ width: 160, typography: 'subtitle2' }}>{fCurrency(subTotal) || data?.subTotal}</Box>
           </Stack>
 
           <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Markup</Box>
-            <Box sx={{ width: 160 }}><Link style={{textDecorationLine: 'none'}} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
-            {/* <Box
-              sx={{
-                width: 160,
-                ...(values.shipping && { color: 'error.main' }),
-              }}
-            >
-              {values.shipping ? `- ${fCurrency(values.shipping)}` : '-'}
-            </Box> */}
+            <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
           </Stack>
 
           <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Discount</Box>
-            <Box sx={{ width: 160 }}><Link style={{textDecorationLine: 'none'}} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
+            <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
           </Stack>
 
           <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Request a deposit</Box>
-            <Box sx={{ width: 160 }}><Link style={{textDecorationLine: 'none'}} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
+            <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
           </Stack>
 
           <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Payment Schedule</Box>
-            <Box sx={{ width: 160 }}><Link style={{textDecorationLine: 'none'}} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
+            <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
           </Stack>
 
           <Stack direction="row">
@@ -231,7 +215,7 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
 
           <Stack direction="row" sx={{ typography: 'subtitle1' }}>
             <Box>Total</Box>
-            <Box sx={{ width: 160 }}>{fCurrency(totalAmount) || '-'}</Box>
+            <Box sx={{ width: 160 }}>{fCurrency(totalAmount) || data?.subTotal}</Box>
           </Stack>
         </Stack>
       </Grid>
@@ -248,13 +232,6 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
         {fields.map((item, index) => (
           <Stack key={item.id} spacing={1.5}>
             <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-              {/* <RHFTextField
-                size="small"
-                name={`items[${index}].title`}
-                label="Title"
-                InputLabelProps={{ shrink: true }}
-              /> */}
-
               <RHFTextField
                 size="small"
                 name={`items[${index}].title`}
@@ -282,17 +259,27 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
               <RHFTextField
                 size="small"
                 type="number"
-                name={`items[${index}].markup`}
+                name={`items[${index}].markUp`}
                 label="Markup"
                 placeholder="0.00"
-                onChange={(event) => handleChangePrice(event, index)}
-                // InputProps={{
-                //   startAdornment: (
-                //     <InputAdornment position="start">
-                //       <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                //     </InputAdornment>
-                //   ),
-                // }}
+                onChange={(event) => handleChangeMarkup(event, index)}
+                sx={{ maxWidth: { md: 96 } }}
+              />
+
+              <RHFTextField
+                size="small"
+                type="number"
+                name={`items[${index}].tax`}
+                label="Tax"
+                placeholder="0.00"
+                onChange={(event) => handleChangeTax(event, index)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
+                    </InputAdornment>
+                  ),
+                }}
                 sx={{ maxWidth: { md: 96 } }}
               />
 
@@ -308,23 +295,6 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
               />
 
               <RHFTextField
-                size="small"
-                type="number"
-                name={`items[${index}].tax`}
-                label="Tax"
-                placeholder="0.00"
-                onChange={(event) => handleChangePrice(event, index)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ maxWidth: { md: 96 } }}
-              />
-
-              <RHFTextField
                 disabled
                 size="small"
                 type="number"
@@ -332,7 +302,6 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
                 label="Total"
                 placeholder="0.00"
                 value={values.items[index].total === 0 ? '' : values.items[index].total.toFixed(2)}
-                onChange={(event) => handleChangePrice(event, index)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -349,13 +318,13 @@ cleaning. It includes material and labor .`, quantity: 3, rate: 200, total: 600 
               />
             </Stack>
             <Stack width={1}>
-            <RHFTextField
+              <RHFTextField
                 size="small"
                 multiline
                 name={`items[${index}].description`}
                 label="Description"
                 fullWidth
-                sx={{mt: 1}}
+                sx={{ mt: 1 }}
                 InputLabelProps={{ shrink: true }}
               />
             </Stack>

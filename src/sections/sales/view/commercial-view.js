@@ -106,7 +106,7 @@ const CommercialView = () => {
                 px={2.5}
               >
                 <Typography variant="h4"> Estimates</Typography>
-                <Button onClick={() => router.push(paths.dashboard.invoice)} variant="contained" color="primary">
+                <Button onClick={() => router.push(paths.dashboard.invoice.root)} variant="contained" color="primary">
                   Create an Estimate
                 </Button>
               </Stack>

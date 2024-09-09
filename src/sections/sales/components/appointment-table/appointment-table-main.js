@@ -163,7 +163,7 @@ const AppointmentTable = ({ loading, data, getData, setSelectedRow, appointmentD
       >
         <MenuItem
           onClick={() => {
-            router.push(paths.dashboard.invoice)
+            router.push(paths.dashboard.invoice.details(row?._id))
             popover.onClose();
           }}
         >

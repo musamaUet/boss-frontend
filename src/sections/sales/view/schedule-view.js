@@ -162,7 +162,10 @@ const ScheduleView = () => {
                 px={2.5}
               >
                 <Typography variant="h4"> Appointments</Typography>
-                <Button onClick={appointmentDialog.onTrue} variant="contained" color="primary">
+                <Button onClick={() => {
+                  setSelectedRow(null)
+                  appointmentDialog.onTrue()
+                }} variant="contained" color="primary">
                   Add new Appointment
                 </Button>
               </Stack>
@@ -179,7 +182,10 @@ const ScheduleView = () => {
                 px={2.5}
               >
                 <Typography variant="h4"> To-Do</Typography>
-                <Button onClick={todoDialog.onTrue} variant="contained" color="primary">
+                <Button onClick={() => {
+                  setSelectedRow(null)
+                  todoDialog.onTrue()
+                }} variant="contained" color="primary">
                   Add to-do task
                 </Button>
               </Stack>
@@ -197,7 +203,10 @@ const ScheduleView = () => {
                 px={2.5}
               >
                 <Typography variant="h4"> Calender</Typography>
-                <Button onClick={calenderDialog.onTrue} variant="contained" color="primary">
+                <Button onClick={() => {
+                  setSelectedRow(null)
+                  calenderDialog.onTrue()
+                }} variant="contained" color="primary">
                   Add Calender Event
                 </Button>
               </Stack>

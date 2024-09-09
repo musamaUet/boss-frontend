@@ -4,7 +4,8 @@ import { HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: "https://apiapp.ezboss.tech" });
+// const axiosInstance = axios.create({ baseURL: HOST_API });
+const axiosInstance = axios.create({ baseURL: 'http://5.183.9.246:3017/' });
 
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -43,6 +44,13 @@ export const API_ENDPOINTS = {
       get: '/api/calendars/all',
       put: '/api/calendars/update',
       delete: '/api/calendars/delete/',
+    },
+    invoices: {
+      post: '/api/invoices/create',
+      get: '/api/invoices/all',
+      put: '/api/invoices/update',
+      delete: '/api/invoices/delete/',
+      singleData: '/api/invoices/show/',
     }
   }
 };

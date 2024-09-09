@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 //@mui
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
@@ -23,7 +23,7 @@ import { paths } from 'src/routes/paths';
 import { formatDate } from 'src/utils/format-number';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
 import { useSnackbar } from 'src/components/snackbar';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Radio } from '@mui/material';
 
 export default function PaymentsTableRow({
   row,
@@ -34,7 +34,9 @@ export default function PaymentsTableRow({
   onDeleteRow,
   setSelectedRow,
   paymentsDialog,
-  getData
+  getData,
+  selectedPayment,
+  setSelectedPayment
 }) {
   const confirm = useBoolean();
   const delLoading = useBoolean()
@@ -59,7 +61,8 @@ export default function PaymentsTableRow({
 
   return (
     <>
-      <TableRow key={row.id}>
+      <TableRow key={row._id}>
+        <TableCell><Radio value={row._id} onChange={(e) => setSelectedPayment(row._id)} /></TableCell>
         <TableCell> {row.paymentCategory} </TableCell>
         <TableCell align="center">{row.paymentType}</TableCell>
         <TableCell align="center">{row.bankName}</TableCell>

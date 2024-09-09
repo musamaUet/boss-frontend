@@ -11,14 +11,18 @@ import PaymentsTable from '../components/payments-table/payments-table-main';
 import { useBoolean } from 'src/hooks/use-boolean';
 import PaymentsDialog from '../components/payments-dialog';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 const PaymentView = () => {
   const settings = useSettingsContext();
+  const router = useRouter()
   const paymentsDialog = useBoolean();
   const paymentLoading = useBoolean(true)
 
   const [paymentTableData, setPaymentTableData] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null)
 
   const getAllPayments = async () => {
     paymentLoading.onTrue()
@@ -49,11 +53,22 @@ const PaymentView = () => {
           p={2.5}
         >
           <Typography variant="h4"> Payments</Typography>
-          <Button onClick={paymentsDialog.onTrue} variant="contained" color="primary">
-            Add Payment
-          </Button>
+          <Stack direction={'row'} alignItems={'center'} gap={1}>
+            {selectedPayment && (<Button onClick={() => {
+              router.push(paths.dashboard.invoice, selectedPayment)
+              setSelectedPayment(null)
+            }} variant="contained">
+              Go to Invoice
+            </Button>)}
+            <Button onClick={() => {
+              setSelectedRow(null)
+              paymentsDialog.onTrue()
+            }} variant="contained" color="primary">
+              Add Payment
+            </Button>
+          </Stack>
         </Stack>
-        <PaymentsTable getData={getAllPayments} paymentsDialog={paymentsDialog} setSelectedRow={setSelectedRow} data={paymentTableData?.data} loading={paymentLoading} />
+        <PaymentsTable selectedPayment={selectedPayment} setSelectedPayment={setSelectedPayment} getData={getAllPayments} paymentsDialog={paymentsDialog} setSelectedRow={setSelectedRow} data={paymentTableData?.data} loading={paymentLoading} />
       </Card>
 
       <PaymentsDialog getData={getAllPayments} selectedRow={selectedRow} setSelectedRow={setSelectedRow} dialog={paymentsDialog} />

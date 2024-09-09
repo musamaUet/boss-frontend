@@ -132,7 +132,10 @@ const PaymentsDialog = ({ dialog, getData, selectedRow, setSelectedRow }) => {
     >
       <Stack direction={'row'} justifyContent={'flex-end'}>
         <Box
-          onClick={() => dialog.onFalse()}
+          onClick={() => {
+            setSelectedRow(null)
+            dialog.onFalse()
+          }}
           sx={{
             display: 'flex',
             flexDirection: 'row',

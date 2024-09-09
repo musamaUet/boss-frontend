@@ -20,6 +20,10 @@ import Iconify from 'src/components/iconify';
 import { SvgEditSquare } from 'src/sections/common/components/list-svg-icons';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
+import { useSnackbar } from 'src/components/snackbar';
+import { formatDate } from 'src/utils/format-number';
+import { CircularProgress } from '@mui/material';
 
 export default function EstimatesTableRow({
   row,
@@ -33,18 +37,38 @@ export default function EstimatesTableRow({
 
   const popover = usePopover();
   const router = useRouter()
+  const delLoading = useBoolean()
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const deleteData = async (id) => {
+    delLoading.onTrue()
+    try {
+      const res = await axios.delete(API_ENDPOINTS.schedule.payment.delete + `${id}`)
+      console.log(res?.data)
+      getData()
+      delLoading.onFalse()
+      enqueueSnackbar(`Deleted Successfully!`, { variant: 'success' });
+      confirm.onFalse()
+    } catch (error) {
+      console.log(error)
+      delLoading.onFalse()
+    }
+  }
+
+
   return (
     <>
-      <TableRow key={row.id}>
-        <TableCell onClick={() => router.push(paths.dashboard.invoice)} sx={{ cursor: 'pointer' }}> {row.doc_num} </TableCell>
-        <TableCell align="center">{row.date}</TableCell>
-        <TableCell align="center">{row.type}</TableCell>
-        <TableCell align="center">{row.contractor}</TableCell>
-        <TableCell align="center">{row.customer}</TableCell>
-        <TableCell align="center">{row.amount}</TableCell>
-        <TableCell align="center">{row.status}</TableCell>
-        <TableCell align="center">{row.paid}</TableCell>
-        <TableCell align="center">{row.notes}</TableCell>
+      <TableRow key={row._id}>
+        <TableCell onClick={() => router.push(paths.dashboard.invoice.details(row?._id))} sx={{ cursor: 'pointer' }}> {row.docNumber || '-'} </TableCell>
+        <TableCell align="center">{formatDate(row.date) || '-'}</TableCell>
+        <TableCell align="center">{'estimate'}</TableCell>
+        <TableCell align="center">{row.company || '-'}</TableCell>
+        <TableCell align="center">{row.customer || '-'}</TableCell>
+        <TableCell align="center">{row.subTotal || '-'}</TableCell>
+        <TableCell align="center">{row.status || 'pending'}</TableCell>
+        <TableCell align="center">{row.payment?.paymentCategory || '-'}</TableCell>
+        <TableCell align="center">{row.additionalNotes || '-'}</TableCell>
         <TableCell
           align="center"
           sx={{
@@ -81,7 +105,7 @@ export default function EstimatesTableRow({
       >
         <MenuItem
           onClick={() => {
-            router.push(paths.dashboard.invoice)
+            router.push(paths.dashboard.invoice.details(row?._id))
             popover.onClose();
           }}
           sx={{ color: 'primary.main' }}
@@ -109,8 +133,13 @@ export default function EstimatesTableRow({
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={confirm.onFalse}>
-            Delete
+          <Button disabled={delLoading?.value} variant="contained" color="error" onClick={() => deleteData(row?._id)}>
+            {
+              delLoading?.value ?
+                <CircularProgress />
+                :
+                'Delete'
+            }
           </Button>
         }
       />

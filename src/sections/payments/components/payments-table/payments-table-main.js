@@ -66,6 +66,7 @@ const TABLE_DATA = Array(10)
   }));
 
 const TABLE_HEAD = [
+  { id: '', label: '', align: 'center' },
   { id: 'p_category', label: 'Payment Category', align: 'left' },
   { id: 'p_type', label: 'Payment Type', align: 'center' },
   { id: 'b_name', label: 'Bank Name', align: 'center' },
@@ -78,7 +79,7 @@ const TABLE_HEAD = [
   { id: 'actions', label: 'Actions', align: 'center' },
 ];
 
-const PaymentsTable = ({ loading, data, getData, setSelectedRow, paymentsDialog }) => {
+const PaymentsTable = ({ loading, data, getData, setSelectedRow, paymentsDialog, setSelectedPayment, selectedPayment }) => {
   const table = useTable({
     defaultOrderBy: 'calories',
   });
@@ -132,6 +133,8 @@ const PaymentsTable = ({ loading, data, getData, setSelectedRow, paymentsDialog 
                         setSelectedRow={setSelectedRow}
                         paymentsDialog={paymentsDialog}
                         getData={getData}
+                        selectedPayment={selectedPayment}
+                        setSelectedPayment={setSelectedPayment}
                       />
                     </>
                   ))}
@@ -167,7 +170,7 @@ const PaymentsTable = ({ loading, data, getData, setSelectedRow, paymentsDialog 
       >
         <MenuItem
           onClick={() => {
-            router.push(paths.dashboard.invoice)
+            router.push(paths.dashboard.invoice.details(row?._id))
             popover.onClose();
           }}
         >
