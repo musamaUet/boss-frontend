@@ -4,7 +4,7 @@ import { HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: "http://5.183.9.246:3017/" });
+const axiosInstance = axios.create({ baseURL: "https://apiapp.ezboss.tech" });
 
 axiosInstance.interceptors.response.use(
   (response) => response,
