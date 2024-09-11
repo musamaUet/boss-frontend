@@ -42,7 +42,7 @@ export default function InvoiceNewEditDetails({ data }) {
 
   const subTotal = sum(totalOnRow);
 
-  const totalAmount = subTotal - values.discount - values.markUp - values.discount;
+  const totalAmount = subTotal;
 
   useEffect(() => {
     setValue('subTotal', subTotal);
@@ -53,7 +53,7 @@ export default function InvoiceNewEditDetails({ data }) {
       title: '',
       description: '',
       quantity: 1,
-      rate: 0,
+      rate: 1,
       tax: 0,
       markUp: 0,
       total: 0,
@@ -147,7 +147,7 @@ export default function InvoiceNewEditDetails({ data }) {
           <Box sx={{ backgroundColor: '#67C118', padding: 2, borderRadius: 1 }}>
             <Typography color={'#ffffff'}>Notes</Typography>
           </Box>
-          <TextField name='additionalNotes' multiline rows={6} placeholder='Document notes here' fullWidth sx={{
+          <RHFTextField name='additionalNotes' multiline rows={6} placeholder='Document notes here' fullWidth sx={{
             border: 'none', '& .MuiOutlinedInput': {
               border: 'none'
             }

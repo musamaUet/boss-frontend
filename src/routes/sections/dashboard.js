@@ -54,8 +54,8 @@ export const dashboardRoutes = [
       {
         path: 'invoice',
         children: [
-          { path: 'add', element: <InvoicePage />, index: true },
-          { path: ':id', element: <InvoicePage /> },
+          { path: 'add/:type', element: <InvoicePage />, index: true },
+          { path: ':type/:id', element: <InvoicePage /> },
         ],
       },
       // { path: 'two', element: <PageTwo /> },

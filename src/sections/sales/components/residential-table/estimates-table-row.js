@@ -32,6 +32,10 @@ export default function EstimatesTableRow({
   onViewRow,
   onEditRow,
   onDeleteRow,
+  currentTab,
+  currentTabValue,
+  getData,
+  page
 }) {
   const confirm = useBoolean();
 
@@ -44,9 +48,8 @@ export default function EstimatesTableRow({
   const deleteData = async (id) => {
     delLoading.onTrue()
     try {
-      const res = await axios.delete(API_ENDPOINTS.schedule.payment.delete + `${id}`)
-      console.log(res?.data)
-      getData()
+      const res = await axios.delete(API_ENDPOINTS.schedule.invoices.delete + `${id}`)
+      getData(currentTab)
       delLoading.onFalse()
       enqueueSnackbar(`Deleted Successfully!`, { variant: 'success' });
       confirm.onFalse()
@@ -60,9 +63,9 @@ export default function EstimatesTableRow({
   return (
     <>
       <TableRow key={row._id}>
-        <TableCell onClick={() => router.push(paths.dashboard.invoice.details(row?._id))} sx={{ cursor: 'pointer' }}> {row.docNumber || '-'} </TableCell>
+        <TableCell onClick={() => router.push(paths.dashboard.invoice.details(row?._id, page))} sx={{ cursor: 'pointer' }}> {row.docNumber || '-'} </TableCell>
         <TableCell align="center">{formatDate(row.date) || '-'}</TableCell>
-        <TableCell align="center">{'estimate'}</TableCell>
+        <TableCell align="center">{currentTab}</TableCell>
         <TableCell align="center">{row.company || '-'}</TableCell>
         <TableCell align="center">{row.customer || '-'}</TableCell>
         <TableCell align="center">{row.subTotal || '-'}</TableCell>
@@ -80,9 +83,7 @@ export default function EstimatesTableRow({
               variant="outlined"
               color="primary"
               sx={{ width: 40, minWidth: 40, height: 40 }}
-              onClick={(e) => {
-                console.log(e);
-              }}
+              onClick={() => router.push(paths.dashboard.invoice.details(row?._id, page))}
             >
               <Iconify icon="solar:pen-bold" />
             </Button>
@@ -105,7 +106,7 @@ export default function EstimatesTableRow({
       >
         <MenuItem
           onClick={() => {
-            router.push(paths.dashboard.invoice.details(row?._id))
+            router.push(paths.dashboard.invoice.details(row?._id, page))
             popover.onClose();
           }}
           sx={{ color: 'primary.main' }}

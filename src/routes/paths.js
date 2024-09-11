@@ -24,8 +24,8 @@ export const paths = {
     root: ROOTS.DASHBOARD,
     one: `${ROOTS.DASHBOARD}/one`,
     invoice: {
-      root: `${ROOTS.DASHBOARD}/invoice/add`,
-      details: (id) => `${ROOTS.DASHBOARD}/invoice/${id}`,
+      root: (type) => `${ROOTS.DASHBOARD}/invoice/add/${type}`,
+      details: (id, type) => `${ROOTS.DASHBOARD}/invoice/${type}/${id}`,
     },
     // invoice: (id) => id ? `${ROOTS.DASHBOARD}/invoice/${id}` : `${ROOTS.DASHBOARD}/invoice`,
     // schedule: `${ROOTS.DASHBOARD}/schedule`,

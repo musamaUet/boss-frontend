@@ -14,15 +14,16 @@ import TodoDialog from '../components/todo-dialog';
 import CalenderTable from '../components/calender-table/calender-table-main';
 import CalenderDialog from '../components/calender-dialog';
 import EstimatesTable from '../components/residential-table/estimates-table-main';
-import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 import { useLocation } from 'react-router';
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
 const TABS = [
   {
-    value: 'estimates',
+    value: 'estimate-draft',
     icon: <Iconify icon="solar:phone-bold" width={24} />,
     label: 'Estimates',
   },
@@ -32,12 +33,12 @@ const TABS = [
     label: 'Drafts',
   },
   {
-    value: 'work_orders',
+    value: 'work-order',
     icon: <Iconify icon="eva:headphones-fill" width={24} />,
     label: 'Work Orders',
   },
   {
-    value: 'change_orders',
+    value: 'change-order',
     icon: <Iconify icon="eva:headphones-fill" width={24} />,
     label: 'Change Orders',
   },
@@ -47,7 +48,7 @@ const TABS = [
     label: 'Invoices',
   },
   {
-    value: 'sent_to_project',
+    value: 'to-project',
     icon: <Iconify icon="eva:headphones-fill" width={24} />,
     label: 'Estimates sent to projects',
   },
@@ -55,16 +56,18 @@ const TABS = [
 
 // ----------------------------------------------------------------------
 
-const CommercialView = () => {
+const ResidentialView = () => {
   const theme = useTheme();
 
   const appointmentDialog = useBoolean();
   const todoDialog = useBoolean();
+  const tableLoading = useBoolean();
   const calenderDialog = useBoolean();
   const settings = useSettingsContext();
   const router = useRouter()
 
-  const [currentTab, setCurrentTab] = useState('estimates');
+  const [currentTab, setCurrentTab] = useState('estimate-draft');
+  const [tableData, setTableData] = useState([])
 
   const { state } = useLocation()
 
@@ -74,11 +77,29 @@ const CommercialView = () => {
     }
   }, [state])
 
-
   const handleChangeTab = useCallback((event, newValue) => {
+    setTableData([])
     setCurrentTab(newValue);
   }, []);
 
+  const getData = async (tab) => {
+    tableLoading.onTrue()
+    try {
+      const response = await axios.get(API_ENDPOINTS.schedule.invoices.get + `?type=commercial&tabType=${tab}`);
+      console.log('API response:', response.data); // Log the full response
+      setTableData(response?.data?.data?.data || []);
+      tableLoading.onFalse()
+    } catch (error) {
+      console.log('Error fetching data:', error);
+      setTableData([]);
+      tableLoading.onFalse()
+    }
+  }
+
+
+  useEffect(() => {
+    getData(currentTab)
+  }, [currentTab])
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Card>
@@ -96,23 +117,43 @@ const CommercialView = () => {
             ))}
           </Tabs>
 
-          {currentTab === 'estimates' && (
-            <>
-              <Stack
-                width={1}
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent={'space-between'}
-                px={2.5}
-              >
-                <Typography variant="h4"> Estimates</Typography>
-                <Button onClick={() => router.push(paths.dashboard.invoice.root)} variant="contained" color="primary">
-                  Create an Estimate
-                </Button>
-              </Stack>
-              <EstimatesTable type='commercial' />
-            </>
-          )}
+          <Stack
+            width={1}
+            direction={'row'}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+            px={2.5}
+          >
+            <Typography variant="h4">
+              {
+                currentTab === 'estimate-draft' ? 'Estimates' :
+                  currentTab === 'drafts' ? 'Drafts' :
+                    currentTab === 'work-order' ? 'Work Orders' :
+                      currentTab === 'change-order' ? 'Change Order' :
+                        currentTab === 'invoices' ? 'Invoices' : // Fix here
+                          'Estimates sent to projects'
+              }
+            </Typography>
+            <Button onClick={() => router.push(paths.dashboard.invoice.root('commercial'))} variant="contained" color="primary">
+              Create an Estimate
+            </Button>
+          </Stack>
+          <EstimatesTable
+            currentTab={
+              currentTab === 'estimate-draft' ? 'Estimates' :
+                currentTab === 'drafts' ? 'Drafts' :
+                  currentTab === 'work-order' ? 'Work Orders' :
+                    currentTab === 'change-order' ? 'Change Order' :
+                      currentTab === 'invoices' ? 'Invoices' : // Fix here
+                        'Estimates sent to projects'
+            }
+            type='residential'
+            page='commercial'
+            data={tableData}
+            getData={getData}
+            currentTabValue={currentTab}
+            loading={tableLoading}
+          />
 
         </Stack>
       </Card>
@@ -124,4 +165,4 @@ const CommercialView = () => {
   );
 };
 
-export default CommercialView;
+export default ResidentialView;

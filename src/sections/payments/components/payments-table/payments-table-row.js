@@ -62,7 +62,7 @@ export default function PaymentsTableRow({
   return (
     <>
       <TableRow key={row._id}>
-        <TableCell><Radio value={row._id} onChange={(e) => setSelectedPayment(row._id)} /></TableCell>
+        <TableCell><Radio checked={selectedPayment === row?._id} onChange={(e) => setSelectedPayment(row._id)} /></TableCell>
         <TableCell> {row.paymentCategory} </TableCell>
         <TableCell align="center">{row.paymentType}</TableCell>
         <TableCell align="center">{row.bankName}</TableCell>

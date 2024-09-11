@@ -25,6 +25,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import Image from 'src/components/image';
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
+import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
@@ -122,6 +124,8 @@ export default function JwtContactView() {
 
   const dispatch = useDispatch();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const [errorMsg, setErrorMsg] = useState('');
 
   const searchParams = useSearchParams();
@@ -132,7 +136,10 @@ export default function JwtContactView() {
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    name: Yup.string().required('Name is required'),
+    phone: Yup.string().required('Phone is required'),
+    reason: Yup.string(),
+    message: Yup.string(),
   });
 
   const defaultValues = {
@@ -153,15 +160,17 @@ export default function JwtContactView() {
 
   const onSubmit = useCallback(
     async (data) => {
-      // try {
-      //   await dispatch(login(data.email, data.password));
-
-      //   router.push(PATH_AFTER_LOGIN);
-      // } catch (error) {
-      //   console.error(error);
-      //   reset();
-      //   setErrorMsg(typeof error === 'string' ? error : error.message);
-      // }
+      let obj = data
+      try {
+        const { data } = await axios.post(API_ENDPOINTS.auth.contact, obj)
+        if (data?.success) {
+          enqueueSnackbar(data?.message, { variant: 'success' })
+          router.push(paths.auth.jwt.login)
+        }
+      } catch (error) {
+        console.log(error)
+        enqueueSnackbar(error?.message, { variant: 'error' })
+      }
     },
     [dispatch, reset, returnTo, router]
   );
@@ -187,7 +196,7 @@ export default function JwtContactView() {
       <RHFTextField name="phone" type={'number'} label="Phone" placeholder="Enter your phone numbber" />
       <RHFSelect
         native
-        name="category"
+        name="reason"
         label='Reason'
         InputLabelProps={{ shrink: true }}
       >

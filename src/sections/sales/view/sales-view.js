@@ -23,19 +23,19 @@ const SalesView = () => {
             <Typography>Residential</Typography>
             <Card sx={{ p: 3, border: '1px solid #BEBEBE', backgroundColor: '#F9F9F9', minHeight: '150px' }}>
               <Stack direction={'row'} alignItems={'center'} spacing={2} mt={1} flexWrap={'wrap'}>
-                <Button onClick={() => router.push(paths.dashboard.sales.residential, 'estimates')} variant='outlined'>
+                <Button onClick={() => router.push(paths.dashboard.sales.residential, 'estimate-draft')} variant='outlined'>
                   Estimates
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.residential, 'work_orders')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.residential, 'work-order')}>
                   Work Orders
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.residential, 'change_orders')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.residential, 'change-order')}>
                   Change orders
                 </Button>
                 <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.residential, 'invoices')}>
                   Invoices
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.residential, 'sent_to_project')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.residential, 'to-project')}>
                   Estimates sent to projets
                 </Button>
               </Stack>
@@ -62,19 +62,19 @@ const SalesView = () => {
             <Typography>Commercial</Typography>
             <Card sx={{ p: 3, border: '1px solid #BEBEBE', backgroundColor: '#F9F9F9', minHeight: '150px' }}>
               <Stack direction={'row'} alignItems={'center'} spacing={2} mt={1} flexWrap={'wrap'}>
-                <Button onClick={() => router.push(paths.dashboard.sales.commercial, 'estimates')} variant='outlined'>
+                <Button onClick={() => router.push(paths.dashboard.sales.commercial, 'estimate-draft')} variant='outlined'>
                   Estimates
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.commercial, 'work_orders')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.commercial, 'work-order')}>
                   Work Orders
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.commercial, 'change_orders')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.commercial, 'change-order')}>
                   Change orders
                 </Button>
                 <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.commercial, 'invoices')}>
                   Invoices
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.commercial, 'sent_to_project')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.commercial, 'to-project')}>
                   Estimates sent to projets
                 </Button>
               </Stack>
@@ -84,13 +84,13 @@ const SalesView = () => {
             <Typography>Services</Typography>
             <Card sx={{ p: 3, border: '1px solid #BEBEBE', backgroundColor: '#F9F9F9', minHeight: '150px' }}>
               <Stack direction={'row'} alignItems={'center'} spacing={2} mt={1} flexWrap={'wrap'}>
-                <Button onClick={() => router.push(paths.dashboard.sales.services, 'estimates')} variant='outlined'>
+                <Button onClick={() => router.push(paths.dashboard.sales.services, 'estimate-draft')} variant='outlined'>
                   Estimates
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.services, 'work_orders')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.services, 'work-order')}>
                   Work Orders
                 </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.services, 'change_orders')}>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.services, 'change-order')}>
                   Change orders
                 </Button>
                 <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.services, 'invoices')}>

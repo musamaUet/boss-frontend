@@ -13,12 +13,14 @@ import PaymentsDialog from '../components/payments-dialog';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { useLocation } from 'react-router';
 
 const PaymentView = () => {
   const settings = useSettingsContext();
   const router = useRouter()
   const paymentsDialog = useBoolean();
   const paymentLoading = useBoolean(true)
+  const { state } = useLocation()
 
   const [paymentTableData, setPaymentTableData] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -55,7 +57,11 @@ const PaymentView = () => {
           <Typography variant="h4"> Payments</Typography>
           <Stack direction={'row'} alignItems={'center'} gap={1}>
             {selectedPayment && (<Button onClick={() => {
-              router.push(paths.dashboard.invoice, selectedPayment)
+              if (state.id) {
+                router.push(paths.dashboard.invoice.details(state.id, state?.type), selectedPayment)
+              } else {
+                router.push(paths.dashboard.invoice.root(state?.type), selectedPayment)
+              }
               setSelectedPayment(null)
             }} variant="contained">
               Go to Invoice

@@ -45,6 +45,7 @@ import { SvgCrossGray, SvgEditSquare } from 'src/sections/common/components/list
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import EstimatesTableRow from './estimates-table-row';
+import TableSkeleton from '../table-skeleton';
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -63,7 +64,7 @@ const TABLE_HEAD = [
   { id: 'actions', label: 'Actions', align: 'center' },
 ];
 
-const EstimatesTable = ({ type, data, loading }) => {
+const EstimatesTable = ({ type, data, loading, currentTab, currentTabValue, getData, page }) => {
 
   const theme = useTheme();
 
@@ -126,30 +127,33 @@ const EstimatesTable = ({ type, data, loading }) => {
                     <TableSkeleton key={index} sx={{ height: denseHeight }} />
                   ))
                   :
-                  tableData?.map((row) => (
-                    <>
-                      <EstimatesTableRow
-                        key={row.id}
-                        row={row}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      // setSelectedRow={setSelectedRow}
-                      // appointmentDialog={appointmentDialog}
-                      // getData={getData}
-                      />
-                    </>
-                  ))}
-
-              <TableNoData
-                notFound={tableData?.length === 0}
-                sx={{
-                  m: -2,
-                  borderRadius: 1.5,
-                  border: `dashed 1px ${theme.palette.divider}`,
-                }}
-              />
+                  tableData?.length > 0 ?
+                    tableData?.map((row) => (
+                      <>
+                        <EstimatesTableRow
+                          key={row.id}
+                          row={row}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onViewRow={() => handleViewRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          currentTab={currentTab}
+                          currentTabValue={currentTabValue}
+                          getData={getData}
+                          page={page}
+                        />
+                      </>
+                    ))
+                    :
+                    <TableNoData
+                      notFound={tableData?.length === 0}
+                      sx={{
+                        m: -2,
+                        borderRadius: 1.5,
+                        border: `dashed 1px ${theme.palette.divider}`,
+                      }}
+                    />
+              }
             </TableBody>
           </Table>
         </Scrollbar>

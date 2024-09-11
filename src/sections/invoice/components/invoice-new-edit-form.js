@@ -11,7 +11,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Grid from '@mui/material/Unstable_Grid2'
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import { useParams, useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -35,6 +35,8 @@ import axios, { API_ENDPOINTS } from 'src/utils/axios';
 export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { type, id } = useParams();
 
   const router = useRouter();
 
@@ -93,7 +95,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
         {
           title: '',
           description: '',
-          rate: 0,
+          rate: 1,
           quantity: 1,
           tax: 0,
           markUp: 0,
@@ -120,8 +122,6 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
 
   const { date } = watch()
 
-  console.log('data', updatedData)
-
   const handleSaveAsDraft = handleSubmit(async (data) => {
     loadingSave.onTrue();
 
@@ -143,20 +143,21 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
       return;
     }
 
-    if (!paymentId) {
-      enqueueSnackbar('Please select Payment', { variant: 'error' });
-      return;
-    }
+    // if (!paymentId) {
+    //   enqueueSnackbar('Please select Payment', { variant: 'error' });
+    //   return;
+    // }
 
     loadingSend.onTrue();
     let obj = {
-      "payment": paymentId,
+      // "payment": paymentId || null,
       "company": data?.company,
       "customer": data?.customer,
       "docNumber": data?.docNumber,
       "date": data?.date,
       "poNumber": data?.poNumber,
-      "types": estimateType,
+      'types': [type],
+      "tabTypes": estimateType,
       "details": data?.items,
       "subTotal": data?.subTotal || updatedData?.subTotal,
       "markUp": 0,
@@ -164,6 +165,10 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
       "depositRequest": "N/A",
       "paymentSchedule": "N/A",
       "additionalNotes": data?.additionalNotes
+    }
+
+    if (paymentId) {
+      obj = { ...obj, payment: paymentId }
     }
 
     if (updatedData) {
@@ -202,9 +207,11 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
   useEffect(() => {
     if (updatedData) {
       reset(defaultValues)
-      setEstimateType(updatedData?.types)
+      setEstimateType(updatedData?.tabTypes)
     }
   }, [updatedData])
+
+  console.log(type)
   return (
     <FormProvider methods={methods} onSubmit={handleCreateAndSend}>
       <Grid container sx={{ mt: '37px' }} spacing={5}>
@@ -220,13 +227,13 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
         <Grid md={4} sm={12} xs={12}>
           <Stack direction={'row'} alignItems={'flex-start'} justifyContent={'flex-end'} gap={3} sx={{ minWidth: '206px', width: 1 }}>
             <Stack>
-              <Button onClick={() => router.push(paths.dashboard.payment)} sx={{ minWidth: '120px' }} variant='contained' color='primary'>Payments</Button>
-              {paymentId ? <Typography fontSize={14}>Selected Payemnt: {paymentId}</Typography> : <Typography color={'red'} fontSize={14}>Note: Please Select/Add the payment before creating inoice.</Typography>}
+              <Button onClick={() => router.push(paths.dashboard.payment, { type, id })} sx={{ minWidth: '120px' }} variant='contained' color='primary'>Payments</Button>
+              {paymentId && <Typography fontSize={14}>Selected Payemnt: {paymentId}</Typography>}
             </Stack>
             <Box sx={{ border: '2px solid #67C118', borderRadius: 2, py: '9px', pl: '10px', minWidth: '180px' }}>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                 <Typography variant='text1' color={'#67C118'}>Estimate draft</Typography>
-                <Switch onChange={handleToggle('estimate')} checked={isSwitchChecked('estimate')} />
+                <Switch onChange={handleToggle('estimate-draft')} checked={isSwitchChecked('estimate-draft')} />
               </Stack>
 
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -241,7 +248,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
 
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                 <Typography variant='text1' color={'#67C118'}>To Projects</Typography>
-                <Switch onChange={handleToggle('to-projects')} checked={isSwitchChecked('to-projects')} />
+                <Switch onChange={handleToggle('to-project')} checked={isSwitchChecked('to-project')} />
               </Stack>
 
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
