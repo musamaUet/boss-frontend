@@ -15,7 +15,7 @@ axiosInstance.interceptors.response.use(
       localStorage.clear();
       window.location.href = "/login";
     }
-    Promise.reject((error.response && error.response.data) || 'Something went wrong')
+    return Promise.reject((error.response && error.response.data) || 'Something went wrong')
   }
 );
 
