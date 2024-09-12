@@ -10,7 +10,13 @@ const axiosInstance = axios.create({ baseURL: 'https://apiapp.ezboss.tech' });
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
+  (error) =>  {
+    if (error.response?.status === 405 || error.response?.status === 401) {
+      localStorage.clear();
+      window.location.href = "/login";
+    }
+    Promise.reject((error.response && error.response.data) || 'Something went wrong')
+  }
 );
 
 export default axiosInstance;
