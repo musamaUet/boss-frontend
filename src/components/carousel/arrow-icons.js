@@ -1,5 +1,8 @@
+//
 import PropTypes from 'prop-types';
 import Iconify from '../iconify';
+
+// ----------------------------------------------------------------------
 
 export function LeftIcon({ icon = 'eva:arrow-ios-forward-fill', isRTL }) {
   return (

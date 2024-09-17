@@ -24,7 +24,7 @@ const PaymentView = () => {
 
   const [paymentTableData, setPaymentTableData] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [selectedPayment, setSelectedPayment] = useState(null)
+  const [selectedPayment, setSelectedPayment] = useState([])
 
   const getAllPayments = async () => {
     paymentLoading.onTrue()
@@ -44,6 +44,12 @@ const PaymentView = () => {
     getAllPayments()
   }, [])
 
+  useEffect(() => {
+    if (state?.paymentId) {
+      setSelectedPayment(state.paymentId)
+    }
+  }, [state])
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Card>
@@ -56,7 +62,7 @@ const PaymentView = () => {
         >
           <Typography variant="h4"> Payments</Typography>
           <Stack direction={'row'} alignItems={'center'} gap={1}>
-            {selectedPayment && (<Button onClick={() => {
+            {selectedPayment?.length > 0 && (<Button onClick={() => {
               if (state.id) {
                 router.push(paths.dashboard.invoice.details(state.id, state?.type), selectedPayment)
               } else {

@@ -62,7 +62,17 @@ export default function PaymentsTableRow({
   return (
     <>
       <TableRow key={row._id}>
-        <TableCell><Radio checked={selectedPayment === row?._id} onChange={(e) => setSelectedPayment(row._id)} /></TableCell>
+        <TableCell><Checkbox checked={selectedPayment.includes(row?._id)}
+          onChange={(e) => {
+            const id = row?._id;
+            if (selectedPayment.includes(id)) {
+              // Remove the ID from the selectedPayment array
+              setSelectedPayment((prev) => prev.filter((item) => item !== id));
+            } else {
+              // Add the ID to the selectedPayment array
+              setSelectedPayment((prev) => [...prev, id]);
+            }
+          }} /></TableCell>
         <TableCell> {row.paymentCategory} </TableCell>
         <TableCell align="center">{row.paymentType}</TableCell>
         <TableCell align="center">{row.bankName}</TableCell>

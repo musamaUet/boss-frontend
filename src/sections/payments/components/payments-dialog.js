@@ -47,10 +47,18 @@ const PaymentsDialog = ({ dialog, getData, selectedRow, setSelectedRow }) => {
   const integrationSchema = Yup.object().shape({
     paymentCategory: Yup.string().required(),
     paymentType: Yup.string().required(),
-    cardType: Yup.string().required(),
-    bankName: Yup.string().required(),
+    cardType: Yup.string().when('paymentType', {
+      is: 'Card',
+      then: (schema) => schema.required('Card Type is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    bankName: Yup.string().when('paymentType', {
+      is: (value) => value !== 'Cash', // Condition to check
+      then: (schema) => schema.required('Bank/App Name is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
     chequeNumber: Yup.string().when('paymentType', {
-      is: 'Cheque', // Conditional validation
+      is: 'Cheque',
       then: (schema) => schema.required('Cheque number is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
@@ -178,7 +186,7 @@ const PaymentsDialog = ({ dialog, getData, selectedRow, setSelectedRow }) => {
 
             <Grid md={12}>
               <Box sx={{ width: '100%' }}>
-                <Typography className="text-night-rider-5">Bank Name</Typography>
+                <Typography className="text-night-rider-5">Bank/App Name</Typography>
                 <RHFTextField size="small" name="bankName" sx={{ mt: 1 }} fullWidth placeholder="Enter bank name" />
               </Box>
             </Grid>

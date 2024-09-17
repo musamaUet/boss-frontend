@@ -23,7 +23,7 @@ import { paths } from 'src/routes/paths';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
 import { useSnackbar } from 'src/components/snackbar';
 import { formatDate } from 'src/utils/format-number';
-import { CircularProgress } from '@mui/material';
+import { Chip, CircularProgress } from '@mui/material';
 
 export default function EstimatesTableRow({
   row,
@@ -49,7 +49,7 @@ export default function EstimatesTableRow({
     delLoading.onTrue()
     try {
       const res = await axios.delete(API_ENDPOINTS.schedule.invoices.delete + `${id}`)
-      getData(currentTab)
+      getData(currentTabValue)
       delLoading.onFalse()
       enqueueSnackbar(`Deleted Successfully!`, { variant: 'success' });
       confirm.onFalse()
@@ -69,8 +69,17 @@ export default function EstimatesTableRow({
         <TableCell align="center">{row.company || '-'}</TableCell>
         <TableCell align="center">{row.customer || '-'}</TableCell>
         <TableCell align="center">{row.subTotal || '-'}</TableCell>
-        <TableCell align="center">{row.status || 'pending'}</TableCell>
-        <TableCell align="center">{row.payment?.paymentCategory || '-'}</TableCell>
+        <TableCell align="center">
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1} flexWrap={'wrap'} maxWidth={'200px'}>
+            {
+              row?.payment?.map((item, index) => (
+                <Chip key={index} label={item?.paymentCategory} variant='soft' color='primary' />
+              ))
+            }
+          </Stack>
+        </TableCell>
+        {/* <TableCell align="center">{row.status || 'pending'}</TableCell>
+        <TableCell align="center">{row.payment?.paymentCategory || '-'}</TableCell> */}
         <TableCell align="center">{row.additionalNotes || '-'}</TableCell>
         <TableCell
           align="center"

@@ -58,8 +58,9 @@ const TABLE_HEAD = [
   { id: 'contractor', label: 'Contractor', align: 'center' },
   { id: 'customer', label: 'Customer', align: 'center' },
   { id: 'amount', label: 'Amount', align: 'center' },
-  { id: 'status', label: 'Status', align: 'center' },
-  { id: 'paid', label: 'Paid', align: 'center' },
+  { id: 'payments', label: 'Payments', align: 'center' },
+  // { id: 'status', label: 'Status', align: 'center' },
+  // { id: 'paid', label: 'Paid', align: 'center' },
   { id: 'notes', label: 'Notes', align: 'center' },
   { id: 'actions', label: 'Actions', align: 'center' },
 ];

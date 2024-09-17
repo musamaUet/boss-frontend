@@ -137,9 +137,9 @@ export default function JwtContactView() {
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     name: Yup.string().required('Name is required'),
-    phone: Yup.string().required('Phone is required'),
+    phone: Yup.string(),
     reason: Yup.string(),
-    message: Yup.string(),
+    message: Yup.string().required('Message is required'),
   });
 
   const defaultValues = {

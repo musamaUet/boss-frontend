@@ -25,6 +25,7 @@ export default function InvoiceView() {
   const { state } = useLocation()
   const params = useParams()
   const [updatedData, setUpdatedData] = useState(null)
+  const [payment, setPayment] = useState([])
 
   const getData = async (val) => {
     try {
@@ -41,12 +42,30 @@ export default function InvoiceView() {
     }
   }, [params?.id])
 
+  useEffect(() => {
+    if (state) {
+      setPayment(prev => {
+        const uniquePayments = new Set([...prev, ...state]);
+        return Array.from(uniquePayments);
+      });
+    }
+  }, [state]);
+
+  useEffect(() => {
+    if (updatedData && !state) {
+      setPayment(prev => {
+        const uniquePayments = new Set([...prev, ...updatedData?.payment]);
+        return Array.from(uniquePayments);
+      });
+    }
+  }, [updatedData]);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Typography variant="h4"> Estimate# 082023-812 </Typography>
       <Grid container>
         <Grid md={12}>
-          <InvoiceNewEditForm updatedData={updatedData} paymentId={state || updatedData?.payment} />
+          <InvoiceNewEditForm updatedData={updatedData} paymentId={payment} />
         </Grid>
       </Grid>
     </Container>

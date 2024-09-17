@@ -24,7 +24,7 @@ import InvoiceNewEditStatusDate from './invoice-new-edit-status-date';
 import InvoiceNewEditDetails from './invoice-new-edit-details';
 import InvoiceNewEditAddress from './invoice-new-edit-address';
 import Image from 'src/components/image';
-import { Box, Button, Switch, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, Switch, TextField, Typography } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
@@ -32,7 +32,7 @@ import axios, { API_ENDPOINTS } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
+export default function InvoiceNewEditForm({ updatedData, paymentId }) {
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -45,6 +45,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
   const loadingSend = useBoolean();
 
   const [estimateType, setEstimateType] = useState([])
+  const [types, setTypes] = useState([])
 
   const NewInvoiceSchema = Yup.object().shape({
     customer: Yup.string().required('Customer to is required'),
@@ -156,7 +157,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
       "docNumber": data?.docNumber,
       "date": data?.date,
       "poNumber": data?.poNumber,
-      'types': [type],
+      'types': types?.length > 0 ? types : [type],
       "tabTypes": estimateType,
       "details": data?.items,
       "subTotal": data?.subTotal || updatedData?.subTotal,
@@ -195,23 +196,34 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
 
 
   const handleToggle = (name) => (event) => {
-    if (event.target.checked) {
-      setEstimateType((prevTypes) => [...prevTypes, name]);
+    if (name === 'residential' || name === 'commercial' || name === 'services') {
+      if (event.target.checked) {
+        setTypes((prevTypes) => [...prevTypes, name]);
+      } else {
+        setTypes((prevTypes) => prevTypes.filter((type) => type !== name));
+      }
     } else {
-      setEstimateType((prevTypes) => prevTypes.filter((type) => type !== name));
+      if (event.target.checked) {
+        setEstimateType((prevTypes) => [...prevTypes, name]);
+      } else {
+        setEstimateType((prevTypes) => prevTypes.filter((type) => type !== name));
+      }
     }
   };
 
-  const isSwitchChecked = (name) => estimateType.includes(name);
+  const isSwitchChecked = (name) => {
+    // Check if name is included in either estimateType or types array
+    return estimateType.includes(name) || types.includes(name);
+  };
 
   useEffect(() => {
     if (updatedData) {
       reset(defaultValues)
       setEstimateType(updatedData?.tabTypes)
+      setTypes(updatedData?.types)
     }
   }, [updatedData])
 
-  console.log(type)
   return (
     <FormProvider methods={methods} onSubmit={handleCreateAndSend}>
       <Grid container sx={{ mt: '37px' }} spacing={5}>
@@ -226,9 +238,18 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
         </Grid>
         <Grid md={4} sm={12} xs={12}>
           <Stack direction={'row'} alignItems={'flex-start'} justifyContent={'flex-end'} gap={3} sx={{ minWidth: '206px', width: 1 }}>
-            <Stack>
-              <Button onClick={() => router.push(paths.dashboard.payment, { type, id })} sx={{ minWidth: '120px' }} variant='contained' color='primary'>Payments</Button>
-              {paymentId && <Typography fontSize={14}>Selected Payemnt: {paymentId}</Typography>}
+            <Stack minWidth={'200px'}>
+              <Button onClick={() => router.push(paths.dashboard.payment, { type, id, paymentId })} sx={{ minWidth: '120px' }} variant='contained' color='primary'>Payments</Button>
+              {paymentId?.length > 0 && (
+                <Stack maxWidth={'200px'}>
+                  <Typography fontSize={14}>Selected Payments:</Typography>
+                  {
+                    paymentId?.map((item, index) => (
+                      <Chip variant='soft' color='info' key={index} label={item} sx={{ mb: 1 }} />
+                    ))
+                  }
+                </Stack>
+              )}
             </Stack>
             <Box sx={{ border: '2px solid #67C118', borderRadius: 2, py: '9px', pl: '10px', minWidth: '180px' }}>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -244,6 +265,11 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                 <Typography variant='text1' color={'#67C118'}>Change Order</Typography>
                 <Switch onChange={handleToggle('change-order')} checked={isSwitchChecked('change-order')} />
+              </Stack>
+
+              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                <Typography variant='text1' color={'#67C118'}>Inovices</Typography>
+                <Switch onChange={handleToggle('invoices')} checked={isSwitchChecked('invoices')} />
               </Stack>
 
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -270,7 +296,17 @@ export default function InvoiceNewEditForm({ updatedData, paymentId, }) {
         </Grid>
         <Grid md={4} sm={12} xs={12}>
           <Stack direction={'row'} alignItems={'center'} gap={2.5}>
-            <Button fullWidth variant='contained'>Cancel</Button>
+            <Button onClick={() => {
+              if (type === 'commercial') {
+                router.push(paths.dashboard.sales.commercial)
+              }
+              if (type === 'residential') {
+                router.push(paths.dashboard.sales.residential)
+              }
+              if (type === 'services') {
+                router.push(paths.dashboard.sales.services)
+              }
+            }} fullWidth variant='contained'>Cancel</Button>
             <Button disabled={loadingSend?.value} fullWidth variant='contained' type='submit' color='primary'>{loadingSend?.value ? 'Saving...' : 'Save'}</Button>
           </Stack>
           <Box sx={{ mt: 2 }}>

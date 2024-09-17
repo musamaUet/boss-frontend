@@ -41,22 +41,6 @@ const SalesView = () => {
               </Stack>
             </Card>
           </Grid>
-          <Grid md={6}>
-            <Typography>Schedule</Typography>
-            <Card sx={{ p: 3, border: '1px solid #BEBEBE', backgroundColor: '#F9F9F9', minHeight: '150px' }}>
-              <Stack direction={'row'} alignItems={'center'} spacing={2} mt={1} flexWrap={'wrap'}>
-                <Button onClick={() => router.push(paths.dashboard.sales.schedule, 'appointments')} variant='outlined'>
-                  Appointments
-                </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.schedule, 'calender')}>
-                  Calendar
-                </Button>
-                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.schedule, 'todo')}>
-                  To- Do
-                </Button>
-              </Stack>
-            </Card>
-          </Grid>
 
           <Grid md={6}>
             <Typography>Commercial</Typography>
@@ -95,6 +79,22 @@ const SalesView = () => {
                 </Button>
                 <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.services, 'invoices')}>
                   Invoices
+                </Button>
+              </Stack>
+            </Card>
+          </Grid>
+          <Grid md={6}>
+            <Typography>Schedule</Typography>
+            <Card sx={{ p: 3, border: '1px solid #BEBEBE', backgroundColor: '#F9F9F9', minHeight: '150px' }}>
+              <Stack direction={'row'} alignItems={'center'} spacing={2} mt={1} flexWrap={'wrap'}>
+                <Button onClick={() => router.push(paths.dashboard.sales.schedule, 'appointments')} variant='outlined'>
+                  Appointments
+                </Button>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.schedule, 'calender')}>
+                  Calendar
+                </Button>
+                <Button variant='outlined' onClick={() => router.push(paths.dashboard.sales.schedule, 'todo')}>
+                  To- Do
                 </Button>
               </Stack>
             </Card>

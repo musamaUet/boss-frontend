@@ -96,16 +96,16 @@ export function useNavData() {
               path: paths.dashboard.sales.residential,
             },
             {
-              title: 'Schedule',
-              path: paths.dashboard.sales.schedule,
-            },
-            {
               title: 'Commercial',
               path: paths.dashboard.sales.commercial,
             },
             {
               title: 'Services',
               path: paths.dashboard.sales.services,
+            },
+            {
+              title: 'Schedule',
+              path: paths.dashboard.sales.schedule,
             },
           ],
         },
