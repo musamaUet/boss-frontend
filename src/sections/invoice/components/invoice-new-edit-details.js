@@ -23,6 +23,7 @@ import { TextField } from '@mui/material';
 import Image from 'src/components/image';
 import { Link } from 'react-router-dom';
 import { paths } from 'src/routes/paths';
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -119,6 +120,25 @@ export default function InvoiceNewEditDetails({ data }) {
 
   const [files, setFiles] = useState([]);
 
+  const handleUploadImages = async (values) => {
+    const formData = new FormData();
+    values.forEach(element => {
+      formData.append('file', element);
+    });
+
+    try {
+      const response = await axios.post(API_ENDPOINTS.schedule.upload_images.post, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('File uploaded successfully!');
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const newFiles = acceptedFiles.map((file) =>
@@ -126,7 +146,8 @@ export default function InvoiceNewEditDetails({ data }) {
           preview: URL.createObjectURL(file),
         })
       );
-
+      const fileArr = [...files, ...newFiles]
+      handleUploadImages(newFiles)
       setFiles([...files, ...newFiles]);
     },
     [files]
@@ -139,6 +160,8 @@ export default function InvoiceNewEditDetails({ data }) {
     },
     [files]
   );
+
+
 
   const renderTotal = (
     <Grid container spacing={5} mt={3}>
@@ -156,7 +179,16 @@ export default function InvoiceNewEditDetails({ data }) {
       </Grid>
       <Grid md={4}>
         <Stack width={1} spacing={2}>
-          <Box sx={{ bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1 }}>
+          <Stack direction={'row'} alignItems={'center'} spacing={2} flexWrap={'wrap'}>
+            <MultiFilePreview
+              thumbnail
+              files={files}
+              onRemove={(file) => handleRemoveFile(file)}
+              sx={{ width: 64, height: 64 }}
+            />
+          </Stack>
+          <UploadBox onDrop={handleDrop} placeholder={<Typography variant='text1' color={'#67C118'}>UPLOAD PHOTOS</Typography>} sx={{ border: '1px solid #67C118', bgcolor: 'white' }} />
+          {/* <Box sx={{ bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1 }}>
             <Stack direction={'row'} gap={1}>
               <Image src='/assets/images/tiger.png' sx={{ width: '69px', height: '69px' }} />
               <Stack>
@@ -174,7 +206,7 @@ export default function InvoiceNewEditDetails({ data }) {
                 <Typography color={'#ffffff'}>Caption line 1 here</Typography>
               </Stack>
             </Stack>
-          </Box>
+          </Box> */}
         </Stack>
       </Grid>
       <Grid md={4}>
@@ -331,13 +363,13 @@ export default function InvoiceNewEditDetails({ data }) {
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
               <Stack direction={'row'} alignItems={'center'}>
                 {/* <Button variant='outlined' color='success'>UPLOAD PHOTOS</Button> */}
-                <MultiFilePreview
+                {/* <MultiFilePreview
                   thumbnail
                   files={files}
                   onRemove={(file) => handleRemoveFile(file)}
                   sx={{ width: 64, height: 64 }}
                 />
-                <UploadBox onDrop={handleDrop} placeholder={<Typography variant='text1' color={'#67C118'}>UPLOAD PHOTOS</Typography>} sx={{ border: '1px solid #67C118', bgcolor: 'white' }} />
+                <UploadBox onDrop={handleDrop} placeholder={<Typography variant='text1' color={'#67C118'}>UPLOAD PHOTOS</Typography>} sx={{ border: '1px solid #67C118', bgcolor: 'white' }} /> */}
               </Stack>
               <Button
                 size="small"

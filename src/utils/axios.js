@@ -10,7 +10,7 @@ const axiosInstance = axios.create({ baseURL: 'https://apiapp.ezboss.tech' });
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) =>  {
+  (error) => {
     if (error.response?.status === 405 || error.response?.status === 401) {
       localStorage.clear();
       window.location.href = "/login";
@@ -59,6 +59,9 @@ export const API_ENDPOINTS = {
       put: '/api/invoices/update',
       delete: '/api/invoices/delete/',
       singleData: '/api/invoices/show/',
+    },
+    upload_images: {
+      post: '/api/invoices/upload-images',
     }
   }
 };
