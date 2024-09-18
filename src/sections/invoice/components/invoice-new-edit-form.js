@@ -28,6 +28,7 @@ import { Box, Button, Chip, Switch, TextField, Typography } from '@mui/material'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
+import { INVOICE_STEPS } from '../../../constants/invoices';
 
 
 // ----------------------------------------------------------------------
@@ -213,8 +214,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
     }
   };
 
-  const isSwitchChecked = (name) => {
-    // Check if name is included in either estimateType or types array
+  const isSwitchChecked = (name, index) => {
     return estimateType.includes(name) || types.includes(name);
   };
 
@@ -261,50 +261,12 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
               )}
             </Stack>
             <Box sx={{ border: '2px solid #67C118', borderRadius: 2, py: '9px', pl: '10px', minWidth: '180px' }}>
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Estimate</Typography>
-                <Switch onChange={handleToggle('estimate')} checked={isSwitchChecked('estimate')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Draft</Typography>
-                <Switch onChange={handleToggle('draft')} checked={isSwitchChecked('draft')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Work order</Typography>
-                <Switch onChange={handleToggle('work-order')} checked={isSwitchChecked('work-order')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Change Order</Typography>
-                <Switch onChange={handleToggle('change-order')} checked={isSwitchChecked('change-order')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Inovices</Typography>
-                <Switch onChange={handleToggle('invoices')} checked={isSwitchChecked('invoices')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>To Projects</Typography>
-                <Switch onChange={handleToggle('to-project')} checked={isSwitchChecked('to-project')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Residential</Typography>
-                <Switch onChange={handleToggle('residential')} checked={isSwitchChecked('residential')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Commercial</Typography>
-                <Switch onChange={handleToggle('commercial')} checked={isSwitchChecked('commercial')} />
-              </Stack>
-
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Services</Typography>
-                <Switch onChange={handleToggle('services')} checked={isSwitchChecked('services')} />
-              </Stack>
+              {INVOICE_STEPS?.map((el, idx) => (
+                <Stack key={idx} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography variant='text1' color={'#67C118'}>{el.label}</Typography>
+                  <Switch onChange={handleToggle(el)} checked={isSwitchChecked(el, idx)} />
+                </Stack>
+              ))}
             </Box>
           </Stack>
         </Grid>
