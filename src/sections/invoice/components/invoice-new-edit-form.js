@@ -47,6 +47,8 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
 
   const [estimateType, setEstimateType] = useState([])
   const [types, setTypes] = useState([])
+  const [typesStep, setTypesStep] = useState(6); // Tracks the step for types
+  const [estimateStep, setEstimateStep] = useState(0);
   const [selectedImages, setSelectedImages] = useState([])
 
   const NewInvoiceSchema = Yup.object().shape({
@@ -198,7 +200,25 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
   });
 
 
-  const handleToggle = (name) => (event) => {
+  // const handleToggle = (name) => (event) => {
+  //   if (name === 'residential' || name === 'commercial' || name === 'services') {
+  //     if (event.target.checked) {
+  //       setTypes((prevTypes) => [...prevTypes, name]);
+  //     } else {
+  //       setTypes((prevTypes) => prevTypes.filter((type) => type !== name));
+  //     }
+  //   } else {
+  //     if (event.target.checked) {
+  //       setEstimateType((prevTypes) => [...prevTypes, name]);
+  //     } else {
+  //       setEstimateType((prevTypes) => prevTypes.filter((type) => type !== name));
+  //     }
+  //   }
+  // };
+
+
+  const handleToggle = (name, idx) => (event) => {
+    // Logic for 'types' switches (residential, commercial, services)
     if (name === 'residential' || name === 'commercial' || name === 'services') {
       if (event.target.checked) {
         setTypes((prevTypes) => [...prevTypes, name]);
@@ -206,15 +226,27 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
         setTypes((prevTypes) => prevTypes.filter((type) => type !== name));
       }
     } else {
+      // Logic for 'estimateType' switches with step validation
       if (event.target.checked) {
-        setEstimateType((prevTypes) => [...prevTypes, name]);
+        if (idx === estimateStep) {
+          setEstimateType((prevTypes) => [...prevTypes, name]);
+          setEstimateStep(estimateStep + 1); // Move to the next step in the estimate state
+        } else {
+          enqueueSnackbar(`Please complete step ${estimateStep + 1} before proceeding`, { variant: 'error' });
+        }
       } else {
         setEstimateType((prevTypes) => prevTypes.filter((type) => type !== name));
+        if (idx < estimateStep) {
+          setEstimateStep(idx); // Revert to this step if unchecked
+        }
       }
     }
   };
 
-  const isSwitchChecked = (name, index) => {
+
+
+
+  const isSwitchChecked = (name) => {
     return estimateType.includes(name) || types.includes(name);
   };
 
@@ -224,6 +256,13 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       setEstimateType(updatedData?.tabTypes)
       setTypes(updatedData?.types)
       setSelectedImages(updatedData?.images)
+
+      const estimateMaxIndex = updatedData?.tabTypes.reduce((maxIndex, currentEstimate) => {
+        const currentIndex = INVOICE_STEPS.findIndex(step => step.value === currentEstimate);
+        return currentIndex > maxIndex ? currentIndex : maxIndex;
+      }, -1);
+
+      setEstimateStep(estimateMaxIndex >= 0 ? estimateMaxIndex + 1 : 0);
     }
   }, [updatedData])
 
@@ -264,7 +303,14 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
               {INVOICE_STEPS?.map((el, idx) => (
                 <Stack key={idx} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography variant='text1' color={'#67C118'}>{el.label}</Typography>
-                  <Switch onChange={handleToggle(el)} checked={isSwitchChecked(el, idx)} />
+                  <Switch
+                    onChange={handleToggle(el.value, idx)}
+                    checked={isSwitchChecked(el.value)}
+                    disabled={el.value !== 'residential' && el.value !== 'commercial' && el.value !== 'services'
+                      ? idx > estimateStep // Disable estimateType switches based on estimateStep
+                      : false // Allow types switches to be freely toggled
+                    }
+                  />
                 </Stack>
               ))}
             </Box>

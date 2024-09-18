@@ -32,8 +32,6 @@ import AddDiscountDialog from './add-discount-dialog';
 export default function InvoiceNewEditDetails({ data, selectedImages, setSelectedImages }) {
   const { control, setValue, watch, resetField, reset } = useFormContext();
 
-  console.log(data)
-
   const imgUploadLoading = useBoolean()
   const addDiscountDialog = useBoolean()
 
