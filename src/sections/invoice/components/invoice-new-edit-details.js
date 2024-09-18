@@ -19,18 +19,23 @@ import Iconify from 'src/components/iconify';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { MultiFilePreview, UploadBox } from 'src/components/upload';
 import Grid from '@mui/material/Unstable_Grid2'
-import { TextField } from '@mui/material';
+import { CircularProgress, TextField } from '@mui/material';
 import Image from 'src/components/image';
 import { Link } from 'react-router-dom';
 import { paths } from 'src/routes/paths';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
+import { useBoolean } from 'src/hooks/use-boolean';
+import AddDiscountDialog from './add-discount-dialog';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceNewEditDetails({ data }) {
+export default function InvoiceNewEditDetails({ data, selectedImages, setSelectedImages }) {
   const { control, setValue, watch, resetField, reset } = useFormContext();
 
   console.log(data)
+
+  const imgUploadLoading = useBoolean()
+  const addDiscountDialog = useBoolean()
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -40,14 +45,17 @@ export default function InvoiceNewEditDetails({ data }) {
   const values = watch();
 
   const totalOnRow = values.items.map((item) => item.quantity * (item.rate + item.tax + item.markUp));
-
+  const totalMarkupRows = values.items.map((item) => item.markUp);
+  const totalTaxRows = values.items.map((item) => item.tax);
+  const totalMarkup = sum(totalMarkupRows)
+  const totalTax = sum(totalTaxRows)
   const subTotal = sum(totalOnRow);
 
-  const totalAmount = subTotal;
+  const totalAmount = subTotal - values?.discount;
 
   useEffect(() => {
-    setValue('subTotal', subTotal);
-  }, [setValue, subTotal, data]);
+    setValue('subTotal', subTotal - values?.discount);
+  }, [setValue, subTotal, data, values]);
 
   const handleAdd = () => {
     append({
@@ -118,24 +126,25 @@ export default function InvoiceNewEditDetails({ data }) {
     [setValue, values.items]
   );
 
-  const [files, setFiles] = useState([]);
-
   const handleUploadImages = async (values) => {
+    imgUploadLoading.onTrue()
     const formData = new FormData();
     values.forEach(element => {
-      formData.append('file', element);
+      formData.append('files', element);
     });
 
     try {
-      const response = await axios.post(API_ENDPOINTS.schedule.upload_images.post, formData, {
+      const { data } = await axios.put(API_ENDPOINTS.schedule.upload_images.put, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       console.log('File uploaded successfully!');
-      console.log(response.data);
+      setSelectedImages((prev) => [...prev, ...data?.data])
+      imgUploadLoading.onFalse()
     } catch (error) {
       console.error(error);
+      imgUploadLoading.onFalse()
     }
   }
 
@@ -146,19 +155,17 @@ export default function InvoiceNewEditDetails({ data }) {
           preview: URL.createObjectURL(file),
         })
       );
-      const fileArr = [...files, ...newFiles]
       handleUploadImages(newFiles)
-      setFiles([...files, ...newFiles]);
     },
-    [files]
+    [selectedImages]
   );
 
   const handleRemoveFile = useCallback(
     (inputFile) => {
-      const filtered = files.filter((file) => file !== inputFile);
-      setFiles(filtered);
+      const filtered = selectedImages.filter((file) => file !== inputFile);
+      setSelectedImages(filtered);
     },
-    [files]
+    [selectedImages]
   );
 
 
@@ -182,12 +189,16 @@ export default function InvoiceNewEditDetails({ data }) {
           <Stack direction={'row'} alignItems={'center'} spacing={2} flexWrap={'wrap'}>
             <MultiFilePreview
               thumbnail
-              files={files}
+              files={selectedImages}
               onRemove={(file) => handleRemoveFile(file)}
               sx={{ width: 64, height: 64 }}
             />
           </Stack>
-          <UploadBox onDrop={handleDrop} placeholder={<Typography variant='text1' color={'#67C118'}>UPLOAD PHOTOS</Typography>} sx={{ border: '1px solid #67C118', bgcolor: 'white' }} />
+          <UploadBox disabled={imgUploadLoading?.value} onDrop={handleDrop} placeholder={<Typography variant='text1' color={'#67C118'}>
+            {imgUploadLoading?.value ?
+              <CircularProgress color='success' />
+              : 'UPLOAD PHOTOS'}
+          </Typography>} sx={{ border: '1px solid #67C118', bgcolor: 'white' }} />
           {/* <Box sx={{ bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1 }}>
             <Stack direction={'row'} gap={1}>
               <Image src='/assets/images/tiger.png' sx={{ width: '69px', height: '69px' }} />
@@ -221,16 +232,24 @@ export default function InvoiceNewEditDetails({ data }) {
           </Stack>
 
           <Stack direction="row">
-            <Box sx={{ color: 'text.secondary' }}>Markup</Box>
-            <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
+            <Box sx={{ color: 'text.secondary' }}>Total Markup</Box>
+            {/* <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box> */}
+            <Box sx={{ width: 160 }}>${totalMarkup}</Box>
           </Stack>
 
           <Stack direction="row">
-            <Box sx={{ color: 'text.secondary' }}>Discount</Box>
-            <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
+            <Box sx={{ color: 'text.secondary' }}>Total Discount</Box>
+            <Box sx={{ width: 160, cursor: 'pointer' }} onClick={() => addDiscountDialog.onTrue()}>
+              {
+                values?.discount ?
+                  <Typography>${values?.discount}</Typography>
+                  :
+                  <Stack><Typography color={'#67C118'}>Add</Typography></Stack>
+              }
+            </Box>
           </Stack>
 
-          <Stack direction="row">
+          {/* <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Request a deposit</Box>
             <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
           </Stack>
@@ -238,11 +257,12 @@ export default function InvoiceNewEditDetails({ data }) {
           <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Payment Schedule</Box>
             <Box sx={{ width: 160 }}><Link style={{ textDecorationLine: 'none' }} to={paths.dashboard.payment}><Typography color={'#67C118'}>Add</Typography></Link></Box>
-          </Stack>
+          </Stack> */}
 
           <Stack direction="row">
             <Box sx={{ color: 'text.secondary' }}>Taxes</Box>
-            <Box sx={{ width: 160 }}>{values.taxes ? fCurrency(values.taxes) : '-'}</Box>
+            {/* <Box sx={{ width: 160 }}>{values.taxes ? fCurrency(values.taxes) : '-'}</Box> */}
+            <Box sx={{ width: 160 }}>${totalTax}</Box>
           </Stack>
 
           <Stack direction="row" sx={{ typography: 'subtitle1' }}>
@@ -255,153 +275,154 @@ export default function InvoiceNewEditDetails({ data }) {
   );
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-        Details:
-      </Typography>
+    <>
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
+          Details:
+        </Typography>
 
-      <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
-        {fields.map((item, index) => (
-          <Stack key={item.id} spacing={1.5}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-              <RHFTextField
-                size="small"
-                name={`items[${index}].title`}
-                label="Title"
-                InputLabelProps={{ shrink: true }}
-              />
+        <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
+          {fields.map((item, index) => (
+            <Stack key={item.id} spacing={1.5}>
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
+                <RHFTextField
+                  size="small"
+                  name={`items[${index}].title`}
+                  label="Title"
+                  InputLabelProps={{ shrink: true }}
+                />
 
-              <RHFTextField
-                size="small"
-                type="number"
-                name={`items[${index}].rate`}
-                label="Rate"
-                placeholder="0.00"
-                onChange={(event) => handleChangePrice(event, index)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ maxWidth: { md: 96 } }}
-              />
+                <RHFTextField
+                  size="small"
+                  type="number"
+                  name={`items[${index}].rate`}
+                  label="Rate"
+                  placeholder="0.00"
+                  onChange={(event) => handleChangePrice(event, index)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ maxWidth: { md: 96 } }}
+                />
 
-              <RHFTextField
-                size="small"
-                type="number"
-                name={`items[${index}].markUp`}
-                label="Markup"
-                placeholder="0.00"
-                onChange={(event) => handleChangeMarkup(event, index)}
-                sx={{ maxWidth: { md: 96 } }}
-              />
+                <RHFTextField
+                  size="small"
+                  type="number"
+                  name={`items[${index}].markUp`}
+                  label="Markup"
+                  placeholder="0.00"
+                  onChange={(event) => handleChangeMarkup(event, index)}
+                  sx={{ maxWidth: { md: 96 } }}
+                />
 
-              <RHFTextField
-                size="small"
-                type="number"
-                name={`items[${index}].tax`}
-                label="Tax"
-                placeholder="0.00"
-                onChange={(event) => handleChangeTax(event, index)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ maxWidth: { md: 96 } }}
-              />
+                <RHFTextField
+                  size="small"
+                  type="number"
+                  name={`items[${index}].tax`}
+                  label="Tax"
+                  placeholder="0.00"
+                  onChange={(event) => handleChangeTax(event, index)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ maxWidth: { md: 96 } }}
+                />
 
-              <RHFTextField
-                size="small"
-                type="number"
-                name={`items[${index}].quantity`}
-                label="Quantity"
-                placeholder="0"
-                onChange={(event) => handleChangeQuantity(event, index)}
-                InputLabelProps={{ shrink: true }}
-                sx={{ maxWidth: { md: 96 } }}
-              />
+                <RHFTextField
+                  size="small"
+                  type="number"
+                  name={`items[${index}].quantity`}
+                  label="Quantity"
+                  placeholder="0"
+                  onChange={(event) => handleChangeQuantity(event, index)}
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ maxWidth: { md: 96 } }}
+                />
 
-              <RHFTextField
-                disabled
-                size="small"
-                type="number"
-                name={`items[${index}].total`}
-                label="Total"
-                placeholder="0.00"
-                value={values.items[index].total === 0 ? '' : values.items[index].total.toFixed(2)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  maxWidth: { md: 104 },
-                  [`& .${inputBaseClasses.input}`]: {
-                    textAlign: { md: 'right' },
-                  },
-                }}
-              />
-            </Stack>
-            <Stack width={1}>
-              <RHFTextField
-                size="small"
-                multiline
-                name={`items[${index}].description`}
-                label="Description"
-                fullWidth
-                sx={{ mt: 1 }}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Stack direction={'row'} alignItems={'center'}>
-                {/* <Button variant='outlined' color='success'>UPLOAD PHOTOS</Button> */}
-                {/* <MultiFilePreview
+                <RHFTextField
+                  disabled
+                  size="small"
+                  type="number"
+                  name={`items[${index}].total`}
+                  label="Total"
+                  placeholder="0.00"
+                  value={values.items[index].total === 0 ? '' : values.items[index].total.toFixed(2)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    maxWidth: { md: 104 },
+                    [`& .${inputBaseClasses.input}`]: {
+                      textAlign: { md: 'right' },
+                    },
+                  }}
+                />
+              </Stack>
+              <Stack width={1}>
+                <RHFTextField
+                  size="small"
+                  multiline
+                  name={`items[${index}].description`}
+                  label="Description"
+                  fullWidth
+                  sx={{ mt: 1 }}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Stack>
+              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                <Stack direction={'row'} alignItems={'center'}>
+                  {/* <Button variant='outlined' color='success'>UPLOAD PHOTOS</Button> */}
+                  {/* <MultiFilePreview
                   thumbnail
                   files={files}
                   onRemove={(file) => handleRemoveFile(file)}
                   sx={{ width: 64, height: 64 }}
                 />
                 <UploadBox onDrop={handleDrop} placeholder={<Typography variant='text1' color={'#67C118'}>UPLOAD PHOTOS</Typography>} sx={{ border: '1px solid #67C118', bgcolor: 'white' }} /> */}
+                </Stack>
+                <Button
+                  size="small"
+                  color="error"
+                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                  onClick={() => handleRemove(index)}
+                >
+                  Remove
+                </Button>
               </Stack>
-              <Button
-                size="small"
-                color="error"
-                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </Button>
             </Stack>
-          </Stack>
-        ))}
-      </Stack>
+          ))}
+        </Stack>
 
-      <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
+        <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
 
-      <Stack
-        spacing={3}
-        direction={{ xs: 'column', md: 'row' }}
-        alignItems={{ xs: 'flex-end', md: 'center' }}
-      >
-        <Button
-          size="small"
-          color="primary"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-          onClick={handleAdd}
-          sx={{ flexShrink: 0 }}
+        <Stack
+          spacing={3}
+          direction={{ xs: 'column', md: 'row' }}
+          alignItems={{ xs: 'flex-end', md: 'center' }}
         >
-          Add Item
-        </Button>
+          <Button
+            size="small"
+            color="primary"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={handleAdd}
+            sx={{ flexShrink: 0 }}
+          >
+            Add Item
+          </Button>
 
-        {/* <Stack
+          {/* <Stack
           spacing={2}
           justifyContent="flex-end"
           direction={{ xs: 'column', md: 'row' }}
@@ -431,9 +452,11 @@ export default function InvoiceNewEditDetails({ data }) {
             sx={{ maxWidth: { md: 120 } }}
           />
         </Stack> */}
-      </Stack>
+        </Stack>
 
-      {renderTotal}
-    </Box>
+        {renderTotal}
+      </Box>
+      <AddDiscountDialog dialog={addDiscountDialog} setValue={setValue} values={values} />
+    </>
   );
 }

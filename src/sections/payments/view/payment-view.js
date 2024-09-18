@@ -12,12 +12,13 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import PaymentsDialog from '../components/payments-dialog';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import { useParams, useRouter } from 'src/routes/hooks';
 import { useLocation } from 'react-router';
 
 const PaymentView = () => {
   const settings = useSettingsContext();
   const router = useRouter()
+  const { id } = useParams()
   const paymentsDialog = useBoolean();
   const paymentLoading = useBoolean(true)
   const { state } = useLocation()
@@ -26,10 +27,10 @@ const PaymentView = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState([])
 
-  const getAllPayments = async () => {
+  const getAllPayments = async (value) => {
     paymentLoading.onTrue()
     try {
-      const res = await axios.get(API_ENDPOINTS.schedule.payment.get)
+      const res = await axios.get(API_ENDPOINTS.schedule.invoices.paymentsByInvoice + value)
       const data = res?.data?.data
       setPaymentTableData(data)
       paymentLoading.onFalse()
@@ -41,8 +42,10 @@ const PaymentView = () => {
   }
 
   useEffect(() => {
-    getAllPayments()
-  }, [])
+    if (id) {
+      getAllPayments(id)
+    }
+  }, [id])
 
   useEffect(() => {
     if (state?.paymentId) {
@@ -83,7 +86,7 @@ const PaymentView = () => {
         <PaymentsTable selectedPayment={selectedPayment} setSelectedPayment={setSelectedPayment} getData={getAllPayments} paymentsDialog={paymentsDialog} setSelectedRow={setSelectedRow} data={paymentTableData?.data} loading={paymentLoading} />
       </Card>
 
-      <PaymentsDialog getData={getAllPayments} selectedRow={selectedRow} setSelectedRow={setSelectedRow} dialog={paymentsDialog} />
+      <PaymentsDialog getData={getAllPayments} id={id} selectedRow={selectedRow} setSelectedRow={setSelectedRow} dialog={paymentsDialog} />
     </Container>
   )
 }

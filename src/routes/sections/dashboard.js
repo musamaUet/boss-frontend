@@ -66,7 +66,7 @@ export const dashboardRoutes = [
       // { path: 'invoice', element: <InvoicePage /> },
       // { path: 'schedule', element: <SchedulePage /> },
       // { path: 'schedule', element: <SchedulePage /> },
-      { path: 'payment', element: <PaymentPage /> },
+      { path: 'payment/:id', element: <PaymentPage /> },
     ],
   },
 ];

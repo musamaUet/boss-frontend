@@ -30,7 +30,7 @@ export const paths = {
     // invoice: (id) => id ? `${ROOTS.DASHBOARD}/invoice/${id}` : `${ROOTS.DASHBOARD}/invoice`,
     // schedule: `${ROOTS.DASHBOARD}/schedule`,
     // schedule: `${ROOTS.DASHBOARD}/schedule`,
-    payment: `${ROOTS.DASHBOARD}/payment`,
+    payment: (id) => `${ROOTS.DASHBOARD}/payment/${id}`,
     two: `${ROOTS.DASHBOARD}/two`,
     three: `${ROOTS.DASHBOARD}/three`,
     sales: {

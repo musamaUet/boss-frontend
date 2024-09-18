@@ -23,12 +23,12 @@ import axios, { API_ENDPOINTS } from 'src/utils/axios';
 
 const TABS = [
   {
-    value: 'estimate-draft',
+    value: 'estimate',
     icon: <Iconify icon="solar:phone-bold" width={24} />,
     label: 'Estimates',
   },
   {
-    value: 'drafts',
+    value: 'draft',
     icon: <Iconify icon="solar:heart-bold" width={24} />,
     label: 'Drafts',
   },
@@ -66,7 +66,7 @@ const ResidentialView = () => {
   const settings = useSettingsContext();
   const router = useRouter()
 
-  const [currentTab, setCurrentTab] = useState('estimate-draft');
+  const [currentTab, setCurrentTab] = useState('estimate');
   const [tableData, setTableData] = useState([])
 
   const { state } = useLocation()
@@ -126,8 +126,8 @@ const ResidentialView = () => {
           >
             <Typography variant="h4">
               {
-                currentTab === 'estimate-draft' ? 'Estimates' :
-                  currentTab === 'drafts' ? 'Drafts' :
+                currentTab === 'estimate' ? 'Estimates' :
+                  currentTab === 'draft' ? 'Drafts' :
                     currentTab === 'work-order' ? 'Work Orders' :
                       currentTab === 'change-order' ? 'Change Order' :
                         currentTab === 'invoices' ? 'Invoices' : // Fix here
@@ -140,8 +140,8 @@ const ResidentialView = () => {
           </Stack>
           <EstimatesTable
             currentTab={
-              currentTab === 'estimate-draft' ? 'Estimates' :
-                currentTab === 'drafts' ? 'Drafts' :
+              currentTab === 'estimate' ? 'Estimates' :
+                currentTab === 'draft' ? 'Drafts' :
                   currentTab === 'work-order' ? 'Work Orders' :
                     currentTab === 'change-order' ? 'Change Order' :
                       currentTab === 'invoices' ? 'Invoices' : // Fix here

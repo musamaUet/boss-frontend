@@ -41,7 +41,7 @@ const c_type_options = [
   { value: 'Discover', label: 'Discover' },
 ];
 
-const PaymentsDialog = ({ dialog, getData, selectedRow, setSelectedRow }) => {
+const PaymentsDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   const integrationSchema = Yup.object().shape({
@@ -98,7 +98,9 @@ const PaymentsDialog = ({ dialog, getData, selectedRow, setSelectedRow }) => {
 
   const onRegenerate = async (data) => {
     let payload = data;
-
+    if (id) {
+      payload = { ...payload, invoice: id }
+    }
     if (selectedRow) {
       payload = { ...payload, paymentId: selectedRow?._id };
     }
@@ -111,7 +113,7 @@ const PaymentsDialog = ({ dialog, getData, selectedRow, setSelectedRow }) => {
       } else {
         response = await axios.post(API_ENDPOINTS.schedule.payment.post, payload);
       }
-      getData();
+      getData(id);
       enqueueSnackbar(`${selectedRow ? 'Updated' : 'Created'} Successfully!`, { variant: 'success' });
       setSelectedRow(null);
       dialog.onFalse();

@@ -46,6 +46,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
 
   const [estimateType, setEstimateType] = useState([])
   const [types, setTypes] = useState([])
+  const [selectedImages, setSelectedImages] = useState([])
 
   const NewInvoiceSchema = Yup.object().shape({
     customer: Yup.string().required('Customer to is required'),
@@ -71,7 +72,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
     // not required
     // markUp: Yup.number(),
     // subTotal: Yup.string(),
-    // discount: Yup.number(),
+    discount: Yup.number(),
     // depositRequest: Yup.number(),
     // paymentSchedule: Yup.number(),
     // totalAmount: Yup.number(),
@@ -159,10 +160,11 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       "poNumber": data?.poNumber,
       'types': types?.length > 0 ? types : [type],
       "tabTypes": estimateType,
+      "images": selectedImages,
       "details": data?.items,
       "subTotal": data?.subTotal || updatedData?.subTotal,
       "markUp": 0,
-      "discount": 0,
+      "discount": data?.discount,
       "depositRequest": "N/A",
       "paymentSchedule": "N/A",
       "additionalNotes": data?.additionalNotes
@@ -221,6 +223,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       reset(defaultValues)
       setEstimateType(updatedData?.tabTypes)
       setTypes(updatedData?.types)
+      setSelectedImages(updatedData?.images)
     }
   }, [updatedData])
 
@@ -239,7 +242,13 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
         <Grid md={4} sm={12} xs={12}>
           <Stack direction={'row'} alignItems={'flex-start'} justifyContent={'flex-end'} gap={3} sx={{ minWidth: '206px', width: 1 }}>
             <Stack minWidth={'200px'}>
-              <Button onClick={() => router.push(paths.dashboard.payment, { type, id, paymentId })} sx={{ minWidth: '120px' }} variant='contained' color='primary'>Payments</Button>
+              <Button onClick={() => {
+                if (id) {
+                  router.push(paths.dashboard.payment(id), { type, id, paymentId })
+                } else {
+                  enqueueSnackbar('Please create invoice first', { variant: 'error' })
+                }
+              }} sx={{ minWidth: '120px' }} variant='contained' color='primary'>Payments</Button>
               {paymentId?.length > 0 && (
                 <Stack maxWidth={'200px'}>
                   <Typography fontSize={14}>Selected Payments:</Typography>
@@ -253,8 +262,13 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
             </Stack>
             <Box sx={{ border: '2px solid #67C118', borderRadius: 2, py: '9px', pl: '10px', minWidth: '180px' }}>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography variant='text1' color={'#67C118'}>Estimate draft</Typography>
-                <Switch onChange={handleToggle('estimate-draft')} checked={isSwitchChecked('estimate-draft')} />
+                <Typography variant='text1' color={'#67C118'}>Estimate</Typography>
+                <Switch onChange={handleToggle('estimate')} checked={isSwitchChecked('estimate')} />
+              </Stack>
+
+              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                <Typography variant='text1' color={'#67C118'}>Draft</Typography>
+                <Switch onChange={handleToggle('draft')} checked={isSwitchChecked('draft')} />
               </Stack>
 
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -330,7 +344,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       </Grid>
 
       <Card sx={{ mt: 5 }}>
-        <InvoiceNewEditDetails data={updatedData} />
+        <InvoiceNewEditDetails selectedImages={selectedImages} setSelectedImages={setSelectedImages} data={updatedData} />
       </Card>
     </FormProvider>
   );
