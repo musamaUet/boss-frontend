@@ -45,10 +45,9 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
 
   const loadingSend = useBoolean();
 
-  const [estimateType, setEstimateType] = useState([])
-  const [types, setTypes] = useState([])
-  const [typesStep, setTypesStep] = useState(6); // Tracks the step for types
-  const [estimateStep, setEstimateStep] = useState(0);
+  const [estimateType, setEstimateType] = useState('');
+  const [types, setTypes] = useState('');
+
   const [selectedImages, setSelectedImages] = useState([])
 
   const NewInvoiceSchema = Yup.object().shape({
@@ -57,7 +56,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
     date: Yup.date().required('Date is required'),
     docNumber: Yup.string().required('Doc number is required'),
     poNumber: Yup.string().required('PO number is required'),
-    types: Yup.array(),
+    types: Yup.string(),
     items: Yup.lazy(() =>
       Yup.array().of(
         Yup.object({
@@ -87,7 +86,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       customer: updatedData?.customer || '',
       company: updatedData?.company || '',
       date: updatedData?.date ? dayjs(updatedData.date) : dayjs(new Date()),
-      types: updatedData?.types || [],
+      types: updatedData?.types || '',
       docNumber: updatedData?.docNumber || '',
       poNumber: updatedData?.poNumber || '',
       markup: updatedData?.markup || 0,
@@ -143,7 +142,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
   });
 
   const handleCreateAndSend = handleSubmit(async (data) => {
-    if (estimateType?.length === 0) {
+    if (!estimateType) {
       enqueueSnackbar('Please select Estimate Type', { variant: 'error' });
       return;
     }
@@ -161,7 +160,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       "docNumber": data?.docNumber,
       "date": data?.date,
       "poNumber": data?.poNumber,
-      'types': types?.length > 0 ? types : [type],
+      'types': types,
       "tabTypes": estimateType,
       "images": selectedImages,
       "details": data?.items,
@@ -200,45 +199,29 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
   });
 
 
-  // const handleToggle = (name) => (event) => {
-  //   if (name === 'residential' || name === 'commercial' || name === 'services') {
-  //     if (event.target.checked) {
-  //       setTypes((prevTypes) => [...prevTypes, name]);
-  //     } else {
-  //       setTypes((prevTypes) => prevTypes.filter((type) => type !== name));
-  //     }
-  //   } else {
-  //     if (event.target.checked) {
-  //       setEstimateType((prevTypes) => [...prevTypes, name]);
-  //     } else {
-  //       setEstimateType((prevTypes) => prevTypes.filter((type) => type !== name));
-  //     }
-  //   }
-  // };
-
-
-  const handleToggle = (name, idx) => (event) => {
+  const handleToggle = (name) => (event) => {
     if (name === 'residential' || name === 'commercial' || name === 'services') {
       if (event.target.checked) {
-        setTypes((prevTypes) => [...prevTypes, name]);
+        // Set the selected value as a string for types
+        setTypes(name);
       } else {
-        setTypes((prevTypes) => prevTypes.filter((type) => type !== name));
+        setTypes(''); // Clear the types if unchecked
       }
     } else {
       if (event.target.checked) {
-        setEstimateType((prevTypes) => [...prevTypes, name]);
+        // Set the selected value as a string for estimateType
+        setEstimateType(name);
       } else {
-        setEstimateType((prevTypes) => prevTypes.filter((type) => type !== name));
+        setEstimateType(''); // Clear the estimateType if unchecked
       }
     }
   };
 
 
-
-
   const isSwitchChecked = (name) => {
-    return estimateType.includes(name) || types.includes(name);
+    return estimateType === name || types === name;
   };
+
 
   useEffect(() => {
     if (updatedData) {
@@ -246,13 +229,6 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       setEstimateType(updatedData?.tabTypes)
       setTypes(updatedData?.types)
       setSelectedImages(updatedData?.images)
-
-      const estimateMaxIndex = updatedData?.tabTypes.reduce((maxIndex, currentEstimate) => {
-        const currentIndex = INVOICE_STEPS.findIndex(step => step.value === currentEstimate);
-        return currentIndex > maxIndex ? currentIndex : maxIndex;
-      }, -1);
-
-      setEstimateStep(estimateMaxIndex >= 0 ? estimateMaxIndex + 1 : 0);
     }
   }, [updatedData])
 

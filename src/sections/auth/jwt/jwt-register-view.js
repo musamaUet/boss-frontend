@@ -73,7 +73,7 @@ export default function JwtRegisterView() {
   const onSubmit = useCallback(
     async (data) => {
       try {
-        await dispatch(register?.(data.email, data.password, data.firstName, data?.lastName));
+        await dispatch(register(data.email, data.password, data.firstName, data?.lastName));
         enqueueSnackbar('User created successfully. Login to continue', { variant: 'success' })
         // router.push();
       } catch (error) {
