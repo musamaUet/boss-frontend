@@ -42,7 +42,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
 
   const values = watch();
 
-  const totalOnRow = values.items.map((item) => item.quantity * (item.rate + item.tax + item.markUp));
+  const totalOnRow = values.items.map((item) => (item.quantity * item.rate) + item.tax + item.markUp);
   const totalMarkupRows = values.items.map((item) => item.markUp);
   const totalTaxRows = values.items.map((item) => item.tax);
   const totalMarkup = sum(totalMarkupRows)
@@ -85,7 +85,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
       setValue(`items[${index}].quantity`, Number(event.target.value));
       setValue(
         `items[${index}].total`,
-        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
+        values.items.map((item) => (item.quantity * item.rate) + item.markUp + item.tax)[index]
       );
     },
     [setValue, values.items]
@@ -96,7 +96,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
       setValue(`items[${index}].rate`, Number(event.target.value));
       setValue(
         `items[${index}].total`,
-        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
+        values.items.map((item) => (item.quantity * item.rate) + item.markUp + item.tax)[index]
       );
     },
     [setValue, values.items]
@@ -107,7 +107,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
       setValue(`items[${index}].markUp`, Number(event.target.value));
       setValue(
         `items[${index}].total`,
-        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
+        values.items.map((item) => (item.quantity * item.rate) + item.markUp + item.tax)[index]
       );
     },
     [setValue, values.items]
@@ -118,7 +118,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
       setValue(`items[${index}].tax`, Number(event.target.value));
       setValue(
         `items[${index}].total`,
-        values.items.map((item) => item.quantity * (item.rate + item.markUp + item.tax))[index]
+        values.items.map((item) => (item.quantity * item.rate) + item.markUp + item.tax)[index]
       );
     },
     [setValue, values.items]
