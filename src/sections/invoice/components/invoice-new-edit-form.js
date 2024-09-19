@@ -218,7 +218,6 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
 
 
   const handleToggle = (name, idx) => (event) => {
-    // Logic for 'types' switches (residential, commercial, services)
     if (name === 'residential' || name === 'commercial' || name === 'services') {
       if (event.target.checked) {
         setTypes((prevTypes) => [...prevTypes, name]);
@@ -226,19 +225,10 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
         setTypes((prevTypes) => prevTypes.filter((type) => type !== name));
       }
     } else {
-      // Logic for 'estimateType' switches with step validation
       if (event.target.checked) {
-        if (idx === estimateStep) {
-          setEstimateType((prevTypes) => [...prevTypes, name]);
-          setEstimateStep(estimateStep + 1); // Move to the next step in the estimate state
-        } else {
-          enqueueSnackbar(`Please complete step ${estimateStep + 1} before proceeding`, { variant: 'error' });
-        }
+        setEstimateType((prevTypes) => [...prevTypes, name]);
       } else {
         setEstimateType((prevTypes) => prevTypes.filter((type) => type !== name));
-        if (idx < estimateStep) {
-          setEstimateStep(idx); // Revert to this step if unchecked
-        }
       }
     }
   };
@@ -306,10 +296,6 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
                   <Switch
                     onChange={handleToggle(el.value, idx)}
                     checked={isSwitchChecked(el.value)}
-                    disabled={el.value !== 'residential' && el.value !== 'commercial' && el.value !== 'services'
-                      ? idx > estimateStep // Disable estimateType switches based on estimateStep
-                      : false // Allow types switches to be freely toggled
-                    }
                   />
                 </Stack>
               ))}
