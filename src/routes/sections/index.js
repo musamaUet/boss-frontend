@@ -13,7 +13,7 @@ export default function Router() {
   return useRoutes([
     {
       path: '/',
-      element: <Navigate to={'/auth/jwt/login'} replace />,
+      element: <Navigate to={PATH_AFTER_LOGIN} replace />,
     },
 
     // Auth routes

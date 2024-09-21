@@ -170,7 +170,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
 
   const renderTotal = (
     <Grid container spacing={5} mt={3}>
-      <Grid md={4}>
+      <Grid md={4} xs={12} sm={12}>
         <Box sx={{ border: '4px solid #67C118', borderRadius: 2 }}>
           <Box sx={{ backgroundColor: '#67C118', padding: 2, borderRadius: 1 }}>
             <Typography color={'#ffffff'}>Notes</Typography>
@@ -182,11 +182,12 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
           }} />
         </Box>
       </Grid>
-      <Grid md={4}>
+      <Grid md={4} xs={12} sm={12}>
         <Stack width={1} spacing={2}>
           <Stack direction={'row'} alignItems={'center'} spacing={2} flexWrap={'wrap'}>
             <MultiFilePreview
               thumbnail
+              showImage
               files={selectedImages}
               onRemove={(file) => handleRemoveFile(file)}
               sx={{ width: 64, height: 64 }}
@@ -195,7 +196,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
           <UploadBox disabled={imgUploadLoading?.value} onDrop={handleDrop} placeholder={<Typography variant='text1' color={'#67C118'}>
             {imgUploadLoading?.value ?
               <CircularProgress color='success' />
-              : 'UPLOAD PHOTOS'}
+              : 'UPLOAD'}
           </Typography>} sx={{ border: '1px solid #67C118', bgcolor: 'white' }} />
           {/* <Box sx={{ bgcolor: '#67C118', borderRadius: '100px', width: 1, p: 1 }}>
             <Stack direction={'row'} gap={1}>
@@ -218,7 +219,7 @@ export default function InvoiceNewEditDetails({ data, selectedImages, setSelecte
           </Box> */}
         </Stack>
       </Grid>
-      <Grid md={4}>
+      <Grid md={4} xs={12} sm={12}>
         <Stack
           spacing={2}
           alignItems="flex-end"

@@ -18,41 +18,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useLocation } from 'react-router';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
-
-// ----------------------------------------------------------------------
-
-const TABS = [
-  {
-    value: 'estimate',
-    icon: <Iconify icon="solar:phone-bold" width={24} />,
-    label: 'Estimates',
-  },
-  {
-    value: 'draft',
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-    label: 'Drafts',
-  },
-  {
-    value: 'work-order',
-    icon: <Iconify icon="eva:headphones-fill" width={24} />,
-    label: 'Work Orders',
-  },
-  {
-    value: 'change-order',
-    icon: <Iconify icon="eva:headphones-fill" width={24} />,
-    label: 'Change Orders',
-  },
-  {
-    value: 'invoices',
-    icon: <Iconify icon="eva:headphones-fill" width={24} />,
-    label: 'Invoices',
-  },
-  {
-    value: 'to-project',
-    icon: <Iconify icon="eva:headphones-fill" width={24} />,
-    label: 'Estimates sent to projects',
-  },
-];
+import { TABS } from 'src/utils/storage-available';
 
 // ----------------------------------------------------------------------
 
@@ -66,7 +32,7 @@ const ResidentialView = () => {
   const settings = useSettingsContext();
   const router = useRouter()
 
-  const [currentTab, setCurrentTab] = useState('estimate');
+  const [currentTab, setCurrentTab] = useState('draft');
   const [tableData, setTableData] = useState([])
 
   const { state } = useLocation()

@@ -29,6 +29,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers';
 import axios, { API_ENDPOINTS } from 'src/utils/axios';
 import { INVOICE_STEPS } from '../../../constants/invoices';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 
 // ----------------------------------------------------------------------
@@ -36,6 +37,8 @@ import { INVOICE_STEPS } from '../../../constants/invoices';
 export default function InvoiceNewEditForm({ updatedData, paymentId }) {
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const mdUp = useResponsive('up', 'md');
 
   const { type, id } = useParams();
 
@@ -190,7 +193,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       enqueueSnackbar(res?.data?.message, { variant: 'success' })
       router.push(paths.dashboard.sales.home)
       reset()
-      setEstimateType([])
+      setEstimateType()
       loadingSend.onFalse();
     } catch (error) {
       console.log(error);
@@ -237,15 +240,31 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
       <Grid container sx={{ mt: '37px' }} spacing={5}>
         <Grid md={4} sm={12} xs={12}>
           <Stack>
-            <Image src='/assets/images/alligator.png' sx={{ height: '275px', width: '280px' }} />
-            <Box mt={5} ml={3}>
+            <Stack alignItems={mdUp ? 'start' : 'center'}>
+              <Image src='/assets/images/alligator.png' sx={{ height: '275px', width: '280px' }} />
+            </Stack>
+            {!mdUp && (<Stack direction={'row'} alignItems={'center'} mt={5} gap={2.5}>
+              <Button onClick={() => {
+                if (type === 'commercial') {
+                  router.push(paths.dashboard.sales.commercial)
+                }
+                if (type === 'residential') {
+                  router.push(paths.dashboard.sales.residential)
+                }
+                if (type === 'services') {
+                  router.push(paths.dashboard.sales.services)
+                }
+              }} fullWidth variant='contained'>Cancel</Button>
+              <Button disabled={loadingSend?.value} fullWidth variant='contained' type='submit' color='primary'>{loadingSend?.value ? 'Saving...' : 'Save'}</Button>
+            </Stack>)}
+            <Box mt={5} ml={mdUp ? 3 : 0}>
               <RHFTextField name={'company'} multiline rows={4} label='Company' />
             </Box>
 
           </Stack>
         </Grid>
         <Grid md={4} sm={12} xs={12}>
-          <Stack direction={'row'} alignItems={'flex-start'} justifyContent={'flex-end'} gap={3} sx={{ minWidth: '206px', width: 1 }}>
+          <Stack direction={mdUp ? 'row' : 'column'} alignItems={mdUp ? 'flex-start' : 'center'} justifyContent={'flex-end'} gap={3} sx={{ minWidth: '206px', width: 1 }}>
             <Stack minWidth={'200px'}>
               <Button onClick={() => {
                 if (id) {
@@ -279,7 +298,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
           </Stack>
         </Grid>
         <Grid md={4} sm={12} xs={12}>
-          <Stack direction={'row'} alignItems={'center'} gap={2.5}>
+          {mdUp && (<Stack direction={'row'} alignItems={'center'} gap={2.5}>
             <Button onClick={() => {
               if (type === 'commercial') {
                 router.push(paths.dashboard.sales.commercial)
@@ -292,7 +311,7 @@ export default function InvoiceNewEditForm({ updatedData, paymentId }) {
               }
             }} fullWidth variant='contained'>Cancel</Button>
             <Button disabled={loadingSend?.value} fullWidth variant='contained' type='submit' color='primary'>{loadingSend?.value ? 'Saving...' : 'Save'}</Button>
-          </Stack>
+          </Stack>)}
           <Box sx={{ mt: 2 }}>
             <RHFTextField name={'customer'} multiline rows={4} label='Customer' />
 

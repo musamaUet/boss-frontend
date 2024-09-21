@@ -14,7 +14,7 @@ import FileThumbnail, { fileData } from '../file-thumbnail';
 
 // ----------------------------------------------------------------------
 
-export default function MultiFilePreview({ thumbnail, files, onRemove, sx }) {
+export default function MultiFilePreview({ thumbnail, files, showImage, onRemove, sx }) {
   return (
     <AnimatePresence initial={false}>
       {files?.map((file) => {

@@ -68,7 +68,7 @@ export default function EstimatesTableRow({
         <TableCell align="center">{currentTab}</TableCell>
         <TableCell align="center">{row.company || '-'}</TableCell>
         <TableCell align="center">{row.customer || '-'}</TableCell>
-        <TableCell align="center">{row.subTotal || '-'}</TableCell>
+        <TableCell align="center">{row.subTotal ? `$${row?.subTotal}` : '-'}</TableCell>
         <TableCell align="center">
           <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1} flexWrap={'wrap'} maxWidth={'200px'}>
             {
