@@ -33,6 +33,7 @@ export const paths = {
     payment: (id) => `${ROOTS.DASHBOARD}/payment/${id}`,
     two: `${ROOTS.DASHBOARD}/two`,
     three: `${ROOTS.DASHBOARD}/three`,
+    messagesDashboard: `${ROOTS.DASHBOARD}/messages-dashboard`,
     sales: {
       root: `${ROOTS.DASHBOARD}/sales`,
       schedule: `${ROOTS.DASHBOARD}/sales/schedule`,

@@ -21,7 +21,7 @@ const SalesPage = lazy(() => import('src/pages/dashboard/sales/sales-page'));
 const CommercialPage = lazy(() => import('src/pages/dashboard/sales/commercial-page'));
 const ResidentialPage = lazy(() => import('src/pages/dashboard/sales/residential-view'));
 const ServicesPage = lazy(() => import('src/pages/dashboard/sales/services-page'));
-// const SchedulePage = lazy(() => import('src/pages/dashboard/schedule-page'));
+const MessagesPage = lazy(() => import('src/pages/dashboard/messages-page'));
 const PaymentPage = lazy(() => import('src/pages/dashboard/payment-page'));
 
 // ----------------------------------------------------------------------
@@ -65,7 +65,7 @@ export const dashboardRoutes = [
       { path: 'six', element: <PageSix /> },
       // { path: 'invoice', element: <InvoicePage /> },
       // { path: 'schedule', element: <SchedulePage /> },
-      // { path: 'schedule', element: <SchedulePage /> },
+      { path: 'messages-dashboard', element: <MessagesPage /> },
       { path: 'payment/:id', element: <PaymentPage /> },
     ],
   },
