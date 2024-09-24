@@ -21,28 +21,17 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { formatDate } from 'src/utils/format-number';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-const p_cat_options = [
-  { value: 'Deposit', label: 'Deposit' },
-  { value: 'Final', label: 'Final' },
-  { value: 'Progressive', label: 'Progressive' },
-  { value: 'Retention', label: 'Retention' },
+const options = [
+  { value: 'view_users', label: 'View Users' },
+  { value: 'view_roles', label: 'View Roles' },
+  { value: 'edit_users', label: 'Edit Users' },
+  { value: 'edit_roles', label: 'Edit Roles' },
+  { value: 'delete_users', label: 'Delete Users' },
+  { value: 'delete_roles', label: 'Delete Roles' },
+  { value: 'manage_permissions', label: 'Manage Permissions' },
 ];
 
-const p_type_options = [
-  { value: 'Cash', label: 'Cash' },
-  { value: 'App', label: 'App' },
-  { value: 'Cheque', label: 'Cheque' },
-  { value: 'Card', label: 'Card' },
-];
-
-const c_type_options = [
-  { value: 'Visa', label: 'Visa Card' },
-  { value: 'Master', label: 'Master Card' },
-  { value: 'American', label: 'American Express' },
-  { value: 'Discover', label: 'Discover' },
-];
-
-const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
+const RolesDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   const password = useBoolean();
@@ -163,94 +152,34 @@ const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
         </Box>
       </Stack>
       <Stack alignItems={'center'} width={1}>
-        <Typography variant="h4">Add User</Typography>
+        <Typography variant="h4">Add New Role</Typography>
       </Stack>
       <Box sx={{ px: '36px', py: 5 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onRegenerate)}>
           <Stack spacing={2.5}>
             <RHFTextField
               size="small"
-              name="first_name"
+              name="role_name"
               type="text"
-              label="First Name:"
-              placeholder="Enter first name"
-            />
-            <RHFTextField
-              size="small"
-              name="last_name"
-              type="text"
-              label="Last Name:"
-              placeholder="Enter last name"
-            />
-            <RHFTextField
-              size="small"
-              name="email"
-              type="email"
-              label="Email:"
-              placeholder="Enter Email"
-            />
-            <RHFTextField
-              size="small"
-              name="user_name"
-              type="text"
-              label="User Name:"
-              placeholder="Enter user name"
+              label="Role Name:"
+              placeholder="Enter role name"
             />
 
-            <RHFTextField
-              name="password"
-              label="Password"
-              size="small"
-              type={password.value ? 'text' : 'password'}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={password.onToggle} edge="end">
-                      <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <RHFTextField
-              name="confirm_password"
-              label="Confirm Password"
-              size="small"
-              type={password.value ? 'text' : 'password'}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={password.onToggle} edge="end">
-                      <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <Box sx={{ width: '100%' }}>
-              <Typography className="text-night-rider-5">Role</Typography>
-              <RHFSelect
-                fullWidth
-                size="small"
-                name="role"
-                InputLabelProps={{ shrink: true }}
-                sx={{ mt: 1, height: '37px' }}
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-              >
-                {['Admin', 'User', 'Employee', 'Manager'].map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-            </Box>
-
-            <Stack direction={'row'} alignItems={'center'}>
-              <RHFCheckbox name={'agree_terms'} />
-              <Typography>I agree to the Terms and Conditions</Typography>
-            </Stack>
+            <Grid container>
+              {options?.map((item, i) => (
+                <Grid md={6} key={i}>
+                  <RHFCheckbox name={item?.value} label={item?.label} />
+                </Grid>
+              ))}
+            </Grid>
+            <Grid container>
+              <Grid md={6}>
+                <RHFCheckbox name={'select_all'} label={'Select All'} />
+              </Grid>
+              <Grid md={6}>
+                <RHFCheckbox name={'deselect_all'} label={'Deselect All'} />
+              </Grid>
+            </Grid>
             <Stack
               width={1}
               direction={'row'}
@@ -284,4 +213,4 @@ const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
   );
 };
 
-export default UsersDialog;
+export default RolesDialog;
