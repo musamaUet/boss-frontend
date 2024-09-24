@@ -136,7 +136,8 @@ export function useNavData() {
         },
         {
           title: 'Messages',
-          path: paths.dashboard.messagesDashboard,
+          // path: paths.dashboard.messagesDashboard,
+          path: paths.dashboard.three,
           icon: ICONS.Messages,
         },
         {
