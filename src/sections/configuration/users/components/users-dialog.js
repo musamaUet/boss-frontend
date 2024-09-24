@@ -19,6 +19,7 @@ import Iconify from 'src/components/iconify';
 import { RHFCheckbox, RHFRadioGroup, RHFSelect, RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { formatDate } from 'src/utils/format-number';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 const p_cat_options = [
   { value: 'Deposit', label: 'Deposit' },
@@ -43,6 +44,8 @@ const c_type_options = [
 
 const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
   const { enqueueSnackbar } = useSnackbar();
+
+  const password = useBoolean();
 
   const integrationSchema = Yup.object().shape({
     paymentCategory: Yup.string().required(),
@@ -98,31 +101,31 @@ const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
 
   const onRegenerate = async (data) => {
     let payload = data;
-    if (id) {
-      payload = { ...payload, invoice: id }
-    }
-    if (selectedRow) {
-      payload = { ...payload, paymentId: selectedRow?._id };
-    }
+    // if (id) {
+    //   payload = { ...payload, invoice: id }
+    // }
+    // if (selectedRow) {
+    //   payload = { ...payload, paymentId: selectedRow?._id };
+    // }
 
-    let response;
+    // let response;
 
-    try {
-      if (selectedRow) {
-        response = await axios.put(API_ENDPOINTS.schedule.payment.put, payload);
-      } else {
-        response = await axios.post(API_ENDPOINTS.schedule.payment.post, payload);
-      }
-      getData(id);
-      enqueueSnackbar(`${selectedRow ? 'Updated' : 'Created'} Successfully!`, { variant: 'success' });
-      setSelectedRow(null);
-      dialog.onFalse();
-      reset();
-    } catch (error) {
-      console.log(error);
-      enqueueSnackbar(error.message, { variant: 'error' });
+    // try {
+    //   if (selectedRow) {
+    //     response = await axios.put(API_ENDPOINTS.schedule.payment.put, payload);
+    //   } else {
+    //     response = await axios.post(API_ENDPOINTS.schedule.payment.post, payload);
+    //   }
+    //   getData(id);
+    //   enqueueSnackbar(`${selectedRow ? 'Updated' : 'Created'} Successfully!`, { variant: 'success' });
+    //   setSelectedRow(null);
+    //   dialog.onFalse();
+    //   reset();
+    // } catch (error) {
+    //   console.log(error);
+    //   enqueueSnackbar(error.message, { variant: 'error' });
 
-    }
+    // }
   };
 
   useEffect(() => {
@@ -166,16 +169,16 @@ const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
         <FormProvider methods={methods} onSubmit={handleSubmit(onRegenerate)}>
           <Stack spacing={2.5}>
 
-            <RHFTextField name='organization_name' type="text" label="Organization Name:" placeholder='Enter organization name' />
-            <RHFTextField name='first_name' type="text" label="First Name:" placeholder='Enter first name' />
-            <RHFTextField name='last_name' type="text" label="Last Name:" placeholder='Enter last name' />
-            <RHFTextField name='email' type="email" label="Email:" placeholder='Enter Email' />
-            <RHFTextField name='user_name' type="text" label="User Name:" placeholder='Enter user name' />
+            <RHFTextField size='small' name='first_name' type="text" label="First Name:" placeholder='Enter first name' />
+            <RHFTextField size='small' name='last_name' type="text" label="Last Name:" placeholder='Enter last name' />
+            <RHFTextField size='small' name='email' type="email" label="Email:" placeholder='Enter Email' />
+            <RHFTextField size='small' name='user_name' type="text" label="User Name:" placeholder='Enter user name' />
 
 
             <RHFTextField
               name="password"
               label="Password"
+              size='small'
               type={password.value ? 'text' : 'password'}
               InputProps={{
                 endAdornment: (
@@ -191,6 +194,7 @@ const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
             <RHFTextField
               name="confirm_password"
               label="Confirm Password"
+              size='small'
               type={password.value ? 'text' : 'password'}
               InputProps={{
                 endAdornment: (
@@ -202,6 +206,25 @@ const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
                 ),
               }}
             />
+
+            <Box sx={{ width: '100%' }}>
+              <Typography className="text-night-rider-5">Role</Typography>
+              <RHFSelect
+                fullWidth
+                size='small'
+                name="role"
+                InputLabelProps={{ shrink: true }}
+                sx={{ mt: 1, height: '37px' }}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {['Admin', 'User', 'Employee', 'Manager'].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            </Box>
+
 
             <Stack direction={'row'} alignItems={'center'}>
               <RHFCheckbox name={'agree_terms'} />
@@ -222,7 +245,7 @@ const UsersDialog = ({ dialog, getData, selectedRow, setSelectedRow, id }) => {
                 color="primary"
                 size="large"
                 sx={{ width: '100px' }}
-                variant="contained"
+                variant="outlined"
               >
                 Cancel
               </LoadingButton>
