@@ -3,7 +3,7 @@ import { OrganizationUserLoginView } from 'src/sections/configuration/auth/view'
 
 // ----------------------------------------------------------------------
 
-export default function OrganizationLoginPage() {
+export default function OrganizationUserLoginPage() {
   return (
     <>
       <Helmet>

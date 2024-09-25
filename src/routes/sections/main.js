@@ -14,6 +14,9 @@ const OrganizationUserLoginPage = lazy(() =>
 );
 const UsersPage = lazy(() => import('src/pages/organization/organization/users-page'));
 const RolesPage = lazy(() => import('src/pages/organization/organization/roles-page'));
+const PermissionsPage = lazy(() => import('src/pages/organization/organization/permissions-page'));
+const RelationshipPage = lazy(() => import('src/pages/organization/organization/relationship-page'));
+const OrganizationSettingsPage = lazy(() => import('src/pages/organization/organization/organization-settings-page'));
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +44,18 @@ export const mainRoutes = [
       {
         path: 'roles',
         element: <RolesPage />,
+      },
+      {
+        path: 'permissions',
+        element: <PermissionsPage />,
+      },
+      {
+        path: 'relationship',
+        element: <RelationshipPage />,
+      },
+      {
+        path: 'organization-settings',
+        element: <OrganizationSettingsPage />,
       },
     ],
   },

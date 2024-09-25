@@ -21,6 +21,7 @@ export default function CompactLayout({ children }) {
             minHeight: '100vh',
             textAlign: 'center',
             justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
           {children}

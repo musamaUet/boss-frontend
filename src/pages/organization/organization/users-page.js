@@ -3,7 +3,7 @@ import { UsersView } from 'src/sections/configuration/users/view';
 
 // ----------------------------------------------------------------------
 
-export default function OrganizationLoginPage() {
+export default function OrganizationUsersPage() {
   return (
     <>
       <Helmet>

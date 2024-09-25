@@ -166,7 +166,7 @@ export default function OrganizationLoginView() {
   );
 
   return (
-    <Card sx={{ p: 6, maxWidth: '600px' }}>
+    <Card sx={{ p: 6, width: 1, maxWidth: '600px' }}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         {renderHead}
 

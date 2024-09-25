@@ -3,7 +3,7 @@ import { RolesView } from 'src/sections/configuration/roles/view';
 
 // ----------------------------------------------------------------------
 
-export default function OrganizationLoginPage() {
+export default function OrganizationRolesPage() {
   return (
     <>
       <Helmet>
