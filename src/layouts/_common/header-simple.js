@@ -23,7 +23,7 @@ import { Typography } from '@mui/material';
 // ----------------------------------------------------------------------
 
 const navigationRoutes = [
-  { title: 'Dashboard', link: '#' },
+  { title: 'Dashboard', link: paths.organization.dashboard },
   { title: 'Users', link: paths.organization.users },
   { title: 'Roles', link: paths.organization.roles },
   { title: 'Permissions', link: paths.organization.permissions },
@@ -114,7 +114,7 @@ export default function HeaderSimple() {
         </Stack>
       </Toolbar>
 
-      {offsetTop && <HeaderShadow />}
+      <HeaderShadow />
     </AppBar>
   );
 }
