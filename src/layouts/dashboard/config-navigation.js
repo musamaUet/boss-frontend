@@ -16,6 +16,7 @@ import {
   SvgPurchasing,
   SvgReport,
   SvgSales,
+  SvgWrenchIcon,
 } from 'src/sections/common/components/list-svg-icons';
 
 // ----------------------------------------------------------------------
@@ -66,6 +67,7 @@ const ICONS = {
   Purchasing: icon(SvgPurchasing),
   People: icon(SvgPeople),
   Messages: icon(SvgMessages),
+  Wrench: icon(SvgWrenchIcon),
   Report: icon(SvgReport),
   Complains: icon(SvgComplains),
   Home: icon(SvgHomeIcon),
@@ -133,6 +135,11 @@ export function useNavData() {
           title: 'People',
           path: paths.dashboard.three,
           icon: ICONS.People,
+        },
+        {
+          title: 'Configurations',
+          path: paths.organization.login,
+          icon: ICONS.Wrench,
         },
         {
           title: 'Messages',

@@ -54,6 +54,6 @@ export const paths = {
     roles: `${ROOTS.organization}/roles`,
     permissions: `${ROOTS.organization}/permissions`,
     relationships: `${ROOTS.organization}/relationships`,
-    settings: `${ROOTS.organization}/settings`,
+    settings: `${ROOTS.organization}/system-settings`,
   },
 };

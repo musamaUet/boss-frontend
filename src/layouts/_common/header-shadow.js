@@ -16,8 +16,8 @@ export default function HeaderShadow({ sx, ...other }) {
         opacity: 1,
         borderRadius: '50%',
         position: 'absolute',
-        width: `calc(100% - 48px)`,
-        boxShadow: (theme) => theme.customShadows.z8,
+        // width: `calc(100% - 48px)`,
+        // boxShadow: (theme) => theme.customShadows.z8,
         ...sx,
       }}
       {...other}
