@@ -29,14 +29,14 @@ const navigationRoutes = [
   { title: 'Permissions', link: paths.organization.permissions },
   { title: 'Relationships', link: paths.organization.relationships },
   { title: 'Settings', link: paths.organization.settings },
-]
+];
 
 const loginNavigationRoutes = [
   { title: 'Features', link: '#' },
   { title: 'Pricing', link: '#' },
   { title: 'Contact', link: '#' },
   { title: 'About', link: '#' },
-]
+];
 
 export default function HeaderSimple() {
   const theme = useTheme();
@@ -71,23 +71,21 @@ export default function HeaderSimple() {
           }),
         }}
       >
-        {
-          mainPath === '/login' || mainPath === '/user-login' ?
-            <Stack direction={'row'} alignItems={'center'} gap={2}>
-              <Logo />
-              <Typography>ezboss</Typography>
-            </Stack>
-            :
-            <Stack>
-              <Typography variant='h5'>Organization: Imtiaz Super Market</Typography>
-              <Typography variant='subtitle2'>Admin: Usama_2024</Typography>
-            </Stack>
-        }
+        {mainPath === '/user-register' || mainPath === '/user-login' ? (
+          <Stack direction={'row'} alignItems={'center'} gap={2}>
+            <Logo />
+            <Typography>ezboss</Typography>
+          </Stack>
+        ) : (
+          <Stack>
+            <Typography variant="h5">Organization: Imtiaz Super Market</Typography>
+            <Typography variant="subtitle2">Admin: Usama_2024</Typography>
+          </Stack>
+        )}
 
         <Stack direction="row" alignItems="center" spacing={2}>
-          {
-            (mainPath === '/login' || mainPath === '/user-login') ?
-              loginNavigationRoutes?.map((item, index) => (
+          {mainPath === '/user-register' || mainPath === '/user-login'
+            ? loginNavigationRoutes?.map((item, index) => (
                 <Link
                   key={index}
                   href={item?.link}
@@ -98,8 +96,7 @@ export default function HeaderSimple() {
                   {item?.title}
                 </Link>
               ))
-              :
-              navigationRoutes?.map((item, index) => (
+            : navigationRoutes?.map((item, index) => (
                 <Link
                   key={index}
                   href={item?.link}
@@ -109,8 +106,7 @@ export default function HeaderSimple() {
                 >
                   {item?.title}
                 </Link>
-              ))
-          }
+              ))}
         </Stack>
       </Toolbar>
 

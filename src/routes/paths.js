@@ -48,8 +48,8 @@ export const paths = {
   organization: {
     root: ROOTS.organization,
     dashboard: `${ROOTS.organization}/dashboard`,
-    login: `${ROOTS.organization}/login`,
-    user_login: `${ROOTS.organization}/user-login`,
+    signup: `${ROOTS.organization}/user-register`,
+    login: `${ROOTS.organization}/user-login`,
     users: `${ROOTS.organization}/users`,
     roles: `${ROOTS.organization}/roles`,
     permissions: `${ROOTS.organization}/permissions`,

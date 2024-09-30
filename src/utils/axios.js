@@ -11,11 +11,11 @@ const axiosInstance = axios.create({ baseURL: 'https://apiapp.ezboss.tech' });
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 405 || error.response?.status === 401) {
-      localStorage.clear();
-      window.location.href = "/login";
-    }
-    return Promise.reject((error.response && error.response.data) || 'Something went wrong')
+    // if (error.response?.status === 405 || error.response?.status === 401) {
+    //   localStorage.clear();
+    //   window.location.href = '/login';
+    // }
+    return Promise.reject((error.response && error.response.data) || 'Something went wrong');
   }
 );
 
@@ -63,6 +63,6 @@ export const API_ENDPOINTS = {
     },
     upload_images: {
       put: '/api/invoices/upload-images',
-    }
-  }
+    },
+  },
 };

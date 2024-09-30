@@ -10,6 +10,8 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
+// utils
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
 // redux
 import { useDispatch } from 'src/redux/store';
 import { login } from 'src/redux/slices/auth';
@@ -31,7 +33,7 @@ import { Button, Card } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function OrganizationLoginView() {
+export default function OrganizationSignupView() {
   const router = useRouter();
 
   const dispatch = useDispatch();
@@ -46,8 +48,18 @@ export default function OrganizationLoginView() {
   const password = useBoolean();
 
   const LoginSchema = Yup.object().shape({
+    organization_name: Yup.string().required('Organization name is required'),
+    first_name: Yup.string().required('First name is required'),
+    last_name: Yup.string().required('Last name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    user_name: Yup.string().required('Username is required'),
+    password: Yup.string()
+      .required('Password is required')
+      .min(6, 'Password should be of minimum 6 characters length'),
+    confirm_password: Yup.string()
+      .required('Confirm password is required')
+      .oneOf([Yup.ref('password')], "Password's not match"),
+    agree_terms: Yup.boolean().oneOf([true], '').required(''),
   });
 
   // const defaultValues = {
@@ -56,8 +68,14 @@ export default function OrganizationLoginView() {
   // };
 
   const defaultValues = {
+    organization_name: '',
+    first_name: '',
+    last_name: '',
     email: '',
+    user_name: '',
     password: '',
+    confirm_password: '',
+    agree_terms: false,
   };
 
   const methods = useForm({
@@ -73,7 +91,23 @@ export default function OrganizationLoginView() {
 
   const onSubmit = useCallback(
     async (data) => {
-      const obj = { email: data.email, password: data.password };
+      const obj = {
+        firstName: data?.first_name,
+        lastName: data?.last_name,
+        email: data?.email,
+        password: data?.password,
+        role: 'organization',
+        agreeToTermsAndServices: data?.agree_terms,
+        organizationName: data?.organization_name,
+      };
+
+      try {
+        const { data } = await axios.post(`${API_ENDPOINTS.auth.register}`, obj);
+
+        enqueueSnackbar('Account registered successfully');
+
+        router.push(paths.organization.login);
+      } catch (error) {}
     },
     [dispatch, reset, returnTo, router]
   );
@@ -100,13 +134,21 @@ export default function OrganizationLoginView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-
-      <RHFTextField name='organization_name' type="text" label="Organization Name:" placeholder='Enter organization name' />
-      <RHFTextField name='first_name' type="text" label="First Name:" placeholder='Enter first name' />
-      <RHFTextField name='last_name' type="text" label="Last Name:" placeholder='Enter last name' />
-      <RHFTextField name='email' type="email" label="Email:" placeholder='Enter Email' />
-      <RHFTextField name='user_name' type="text" label="User Name:" placeholder='Enter user name' />
-
+      <RHFTextField
+        name="organization_name"
+        type="text"
+        label="Organization Name:"
+        placeholder="Enter organization name"
+      />
+      <RHFTextField
+        name="first_name"
+        type="text"
+        label="First Name:"
+        placeholder="Enter first name"
+      />
+      <RHFTextField name="last_name" type="text" label="Last Name" placeholder="Enter last name" />
+      <RHFTextField name="email" type="email" label="Email" placeholder="Enter Email" />
+      <RHFTextField name="user_name" type="text" label="User Name" placeholder="Enter user name" />
 
       <RHFTextField
         name="password"
@@ -153,12 +195,7 @@ export default function OrganizationLoginView() {
         >
           Save
         </LoadingButton>
-        <LoadingButton
-          color="primary"
-          size="large"
-          sx={{ width: '100px' }}
-          variant="contained"
-        >
+        <LoadingButton color="primary" size="large" sx={{ width: '100px' }} variant="contained">
           Cancel
         </LoadingButton>
       </Stack>
@@ -171,7 +208,6 @@ export default function OrganizationLoginView() {
         {renderHead}
 
         {renderForm}
-
       </FormProvider>
     </Card>
   );

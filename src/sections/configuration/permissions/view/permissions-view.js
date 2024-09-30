@@ -54,7 +54,7 @@ const PermissionsView = () => {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <Card>
+      <Card sx={{ my: 2 }}>
         <Stack
           width={1}
           direction={'row'}

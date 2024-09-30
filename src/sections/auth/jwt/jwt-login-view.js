@@ -93,7 +93,7 @@ export default function JwtLoginView() {
         // console.log(obj);
         await dispatch(login(obj));
 
-        // router.push(returnTo || PATH_AFTER_LOGIN);
+        router.push(returnTo || PATH_AFTER_LOGIN);
       } catch (error) {
         // console.error(error);
         reset();

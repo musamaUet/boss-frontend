@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useCallback, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
+import Container from '@mui/material/Container';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
@@ -26,6 +27,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSnackbar } from 'src/components/snackbar';
 
 // components
+import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFCheckbox, RHFSelect, RHFTextField } from 'src/components/hook-form';
 import Image from 'src/components/image';
@@ -36,11 +38,11 @@ import { MultiFilePreview, UploadBox } from 'src/components/upload';
 
 export default function SettingsView() {
   const router = useRouter();
-
+  const settings = useSettingsContext();
   const dispatch = useDispatch();
 
   const [errorMsg, setErrorMsg] = useState('');
-  const [selectedImages, setSelectedImages] = useState([])
+  const [selectedImages, setSelectedImages] = useState([]);
 
   const searchParams = useSearchParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -98,7 +100,7 @@ export default function SettingsView() {
           preview: URL.createObjectURL(file),
         })
       );
-      setSelectedImages((prev) => [...prev, ...newFiles])
+      setSelectedImages((prev) => [...prev, ...newFiles]);
     },
     [selectedImages]
   );
@@ -119,22 +121,30 @@ export default function SettingsView() {
 
   const renderHead = (
     <Stack justifyContent={'center'} alignItems={'center'} spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">System Settings</Typography>
+      <Typography variant="h4"></Typography>
     </Stack>
   );
 
   const renderForm = (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h5" textAlign={'start'}>Global Configurations:</Typography>
+      <Typography variant="h5" textAlign={'start'}>
+        Global Configurations
+      </Typography>
       <Grid container rowSpacing={5} mt={2}>
         <Grid md={12}>
-          <RHFTextField size='small' name='site_title' type="text" label="Site Title:" placeholder='Enter site title' />
+          <RHFTextField
+            size="small"
+            name="site_title"
+            type="text"
+            label="Site Title:"
+            placeholder="Enter site title"
+          />
         </Grid>
         <Grid md={12}>
           <RHFSelect
             fullWidth
             size="small"
-            label='Default Language:'
+            label="Default Language:"
             name="language"
             InputLabelProps={{ shrink: true }}
             sx={{ height: '37px' }}
@@ -151,7 +161,7 @@ export default function SettingsView() {
           <RHFSelect
             fullWidth
             size="small"
-            label='Time Zone:'
+            label="Time Zone:"
             name="timezone"
             InputLabelProps={{ shrink: true }}
             sx={{ height: '37px' }}
@@ -182,14 +192,15 @@ export default function SettingsView() {
         </LoadingButton>
       </Stack>
     </FormProvider>
-
   );
 
   return (
-    <Card sx={{ p: 6, width: 1 }}>
-      {renderHead}
+    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <Card sx={{ p: 6, width: 1 }}>
+        {renderHead}
 
-      {renderForm}
-    </Card>
+        {renderForm}
+      </Card>
+    </Container>
   );
 }

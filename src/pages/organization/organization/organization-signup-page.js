@@ -1,16 +1,16 @@
 import { Helmet } from 'react-helmet-async';
-import { OrganizationLoginView } from 'src/sections/configuration/auth/view';
+import { OrganizationSignupView } from 'src/sections/configuration/auth/view';
 
 // ----------------------------------------------------------------------
 
-export default function OrganizationLoginPage() {
+export default function OrganizationSignupPage() {
   return (
     <>
       <Helmet>
         <title> Organization: Login</title>
       </Helmet>
 
-      <OrganizationLoginView />
+      <OrganizationSignupView />
     </>
   );
 }

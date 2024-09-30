@@ -10,6 +10,8 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
+// utils
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
 // redux
 import { useDispatch } from 'src/redux/store';
 import { login } from 'src/redux/slices/auth';
@@ -48,16 +50,13 @@ export default function OrganizationUserLoginView() {
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
+    agree_terms: Yup.boolean().oneOf([true], '').required(''),
   });
-
-  // const defaultValues = {
-  //   email: 'demo@minimals.cc',
-  //   password: 'demo1234',
-  // };
 
   const defaultValues = {
     email: '',
     password: '',
+    agree_terms: false,
   };
 
   const methods = useForm({
@@ -74,7 +73,13 @@ export default function OrganizationUserLoginView() {
   const onSubmit = useCallback(
     async (data) => {
       const obj = { email: data.email, password: data.password };
+      console.log(obj);
+      try {
+        // const { data } = await axios.post(`${API_ENDPOINTS.auth.login}`, obj);
+        await dispatch(login(obj));
 
+        router.push(paths.organization.dashboard);
+      } catch (error) {}
     },
     [dispatch, reset, returnTo, router]
   );
@@ -87,7 +92,7 @@ export default function OrganizationUserLoginView() {
 
   const renderHead = (
     <Stack justifyContent={'center'} alignItems={'center'} spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Create Your Ezboss Account</Typography>
+      <Typography variant="h4">Login Your Ezboss Account</Typography>
 
       {/* <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>
@@ -101,9 +106,7 @@ export default function OrganizationUserLoginView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-
-      <RHFTextField name='user_name' type="text" label="Email or UserName:" placeholder='Enter user name' />
-
+      <RHFTextField name="email" type="email" label="Email" />
 
       <RHFTextField
         name="password"
@@ -134,10 +137,7 @@ export default function OrganizationUserLoginView() {
         >
           Login
         </LoadingButton>
-        <LoadingButton
-          color="primary"
-          size="large"
-        >
+        <LoadingButton color="primary" size="large">
           Forgot Password
         </LoadingButton>
       </Stack>
@@ -150,7 +150,6 @@ export default function OrganizationUserLoginView() {
         {renderHead}
 
         {renderForm}
-
       </FormProvider>
     </Card>
   );

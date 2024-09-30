@@ -1,13 +1,16 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 // layouts
+import MainLayout from 'src/layouts/main';
 import CompactLayout from 'src/layouts/compact';
+// components
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
 const Page404 = lazy(() => import('src/pages/404'));
-const OrganizationLoginPage = lazy(() =>
-  import('src/pages/organization/organization/organization-login-page')
+const OrganizationSignupPage = lazy(() =>
+  import('src/pages/organization/organization/organization-signup-page')
 );
 const OrganizationUserLoginPage = lazy(() =>
   import('src/pages/organization/organization/organization-user-login-page')
@@ -15,8 +18,12 @@ const OrganizationUserLoginPage = lazy(() =>
 const UsersPage = lazy(() => import('src/pages/organization/organization/users-page'));
 const RolesPage = lazy(() => import('src/pages/organization/organization/roles-page'));
 const PermissionsPage = lazy(() => import('src/pages/organization/organization/permissions-page'));
-const RelationshipPage = lazy(() => import('src/pages/organization/organization/relationship-page'));
-const OrganizationSettingsPage = lazy(() => import('src/pages/organization/organization/organization-settings-page'));
+const RelationshipPage = lazy(() =>
+  import('src/pages/organization/organization/relationship-page')
+);
+const OrganizationSettingsPage = lazy(() =>
+  import('src/pages/organization/organization/organization-settings-page')
+);
 const MyProfilePage = lazy(() => import('src/pages/organization/organization/my-profile-page'));
 const DashboardPage = lazy(() => import('src/pages/organization/organization/dashboard-page'));
 const SettingsPage = lazy(() => import('src/pages/organization/organization/settings-page'));
@@ -28,19 +35,30 @@ export const mainRoutes = [
     path: 'organization',
     element: (
       <CompactLayout>
-        <Outlet />
+        <Suspense fallback={<LoadingScreen />}>
+          <Outlet />
+        </Suspense>
       </CompactLayout>
     ),
     children: [
-      { path: '404', element: <Page404 /> },
       {
-        path: 'login',
-        element: <OrganizationLoginPage />,
+        path: 'user-register',
+        element: <OrganizationSignupPage />,
       },
       {
         path: 'user-login',
         element: <OrganizationUserLoginPage />,
       },
+    ],
+  },
+  {
+    path: 'organization',
+    element: (
+      <MainLayout>
+        <Outlet />
+      </MainLayout>
+    ),
+    children: [
       {
         path: 'users',
         element: <UsersPage />,
@@ -73,6 +91,7 @@ export const mainRoutes = [
         path: 'system-settings',
         element: <SettingsPage />,
       },
+      { path: '404', element: <Page404 /> },
     ],
   },
 ];
